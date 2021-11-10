@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import django_heroku
 import os
 from pathlib import Path
 
@@ -20,8 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET',
-                            default='django-insecure-k5p15ds1cu^eas@r)=!d-pt8*cc6&9m%s4x#ixs6u0b9b!g5d3')
+SECRET_KEY = 'django-insecure-k5p15ds1cu^eas@r)=!d-pt8*cc6&9m%s4x#ixs6u0b9b!g5d3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('LOCAL') is not None
@@ -125,3 +125,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+django_heroku.settings(locals())
