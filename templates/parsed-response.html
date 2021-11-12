@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'wiki.min.css' %}">
+    <title>Parser output</title>
+</head>
+<body class="mediawiki">
+<div id="content" class="mw-body" role="main">
+<div class="mw-body-content">
+{{ mw_parser | safe }}
+</div>
+</div>
+</body>
+</html>

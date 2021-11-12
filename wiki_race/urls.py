@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from wiki_race.parser.views import parse_article
+
 urlpatterns = [
+    path('wiki/<str:article>', parse_article),
     path('admin/', admin.site.urls),
 ]
