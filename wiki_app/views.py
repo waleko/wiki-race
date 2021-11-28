@@ -29,7 +29,7 @@ def game_page(request: HttpRequest, game_id: str) -> HttpResponse:
         response = redirect(join_page, game_id=party.uid)
     else:
         uri = reverse("game-websocket", urlconf=urls, kwargs={'game_id': game_id, 'user_id': user.uid})
-        websocket_protocol = "ws" if request.get_host().startswith("localhost") else "wss"
+        websocket_protocol = "ws" if request.get_host().startswith("127.0.0.1") else "wss"
         response = render(request, "game.html",
                           context={
                               "WEBSOCKET_URL": f"{websocket_protocol}://{request.get_host()}{uri}",

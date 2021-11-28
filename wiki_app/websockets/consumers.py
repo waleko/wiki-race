@@ -83,6 +83,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def finish_round(self, party_round):
         # time ended
+        await sync_to_async(party_round.refresh_from_db)()
+        if not party_round.running:
+            return
         finished_data = await sync_to_async(finish_round)(party_round)
         await self.group_send('round_finished', finished_data)
 
