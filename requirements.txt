@@ -1,7 +1,7 @@
 Django~=3.2.9
 psycopg2~=2.9.1
 django-heroku~=0.3.1
-gunicorn~=20.1.0
+gunicorn[standard]~=20.1.0
 uvicorn~=0.15.0
 beautifulsoup4~=4.10.0
 requests~=2.26.0
