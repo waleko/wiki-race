@@ -1,5 +1,8 @@
+import django
 from channels.routing import URLRouter
 from django.urls import path
+
+django.setup()
 
 from wiki_app.websockets.consumers import GameConsumer
 
