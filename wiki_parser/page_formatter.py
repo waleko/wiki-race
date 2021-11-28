@@ -1,3 +1,4 @@
+import json
 import re
 from typing import List, Optional
 
@@ -5,9 +6,7 @@ from bs4 import BeautifulSoup, Tag
 
 
 def filter_link(dest: str) -> Optional[str]:
-    match = re.fullmatch(r"^/wiki/([^/]*)$", dest)
-    # FIXME: `File:Aerial_Tower_of_London.jpg` results in an exception
-    # TODO: add ban for years, dates, etc; see https://en.wikipedia.org/wiki/Wikipedia:Wiki_Game
+    match = re.fullmatch(r"^/wiki/([^/:]*)$", dest)
     if match is None:
         return None
     return match[1]
@@ -25,5 +24,6 @@ def wiki_format_html(html: str) -> str:
         if dest_page is None:
             del link['href']
         else:
-            link['onclick'] = f"console.log(\"{dest_page}\");"  # tmp log
+            obj = {"type": "click", "destination": dest_page}
+            link['onclick'] = f"window.parent.postMessage({json.dumps(obj)}, '*')"  # TODO: check no injection is possible
     return soup.prettify()

@@ -16,9 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from wiki_race.parser.views import parse_article
+from wiki_app.views import index_view, new_party_page, join_page, game_page
+from wiki_parser.views import parse_article
+from wiki_app.party.views import create_party_internal, enter_party_internal
 
 urlpatterns = [
     path('wiki/<str:article>', parse_article),
     path('admin/', admin.site.urls),
+    path('api/create', create_party_internal),
+    path('api/enter', enter_party_internal),
+    path('', index_view),
+    path('new', new_party_page),
+    path('join/<str:game_id>', join_page),
+    path('game/<str:game_id>', game_page)
 ]

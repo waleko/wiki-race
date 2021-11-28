@@ -31,12 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'wiki_app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# XFrameOptionsMiddleware settings
+X_FRAME_OPTIONS = 'sameorigin'
 
 ROOT_URLCONF = 'wiki_race.urls'
 
@@ -69,16 +74,41 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wiki_race.wsgi.application'
+ASGI_APPLICATION = 'wiki_race.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'HOST': 'localhost',
+        'USER': 'postgres',
+        'PASSWORD': 'local'
     }
 }
+
+# Channel layer
+# https://channels.readthedocs.io/en/stable/topics/channel_layers.html
+CHANNEL_LAYERS = {
+    "default": {
+        # debug mode, unsuited for production
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+# channel layer for heroku deployments
+REDIS_URL = os.environ.get("REDIS_URL")
+
+if REDIS_URL:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [REDIS_URL],
+            },
+        },
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -115,13 +145,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = ['static']
+STATICFILES_DIRS = ['static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Application constants
 WIKI_API = "https://en.wikipedia.org/w/api.php"
+POINTS_FOR_SOLVING = 100
 
+USER_COOKIE_NAME = 'user_id'
+
+# Django heroku helper
 django_heroku.settings(locals())

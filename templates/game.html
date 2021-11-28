@@ -1,0 +1,38 @@
+{% include "base/header.html" %}
+<main class="page">
+    <section class="clean-block mt-5">
+        <div class="row p-3 m-3">
+            <div class="col">
+                <h5>
+                    <b><p style="display: inline" id="origin">Wikiracing</p></b>
+                    <p style="display: inline">-></p>
+                    <b><p style="display: inline" id="destination">Wikiracing</p></b>
+                </h5>
+            </div>
+            <div class="col-1">
+                <button class="btn btn-outline-primary" onclick="showModal()">Menu</button>
+            </div>
+            <div class="col-1">
+                <h5>
+                    <p style="display: inline" id="timer-minutes">0</p>
+                    <p style="display: inline">:</p>
+                    <p style="display: inline" id="timer-seconds">00</p>
+                </h5>
+            </div>
+        </div>
+        <div class="col">
+            <div class="container">
+                <div class="row-container" style="width: 100%;">
+                    <div class="second-row">
+                        <script>
+                            conf['WEBSOCKET_URL'] = "{{ WEBSOCKET_URL }}";
+                            let is_admin = ("{{ is_admin }}" === "True");
+                        </script>
+                        <iframe id="game-iframe" onload="resizeIframe(this)" src="/wiki/Wikiracing"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% include "base/footer.html" %}
