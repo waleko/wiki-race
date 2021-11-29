@@ -1,0 +1,14 @@
+{
+  "environments": {
+    "test": {
+      "addons":[
+         "heroku-redis",
+         "heroku-postgresql"
+      ],
+      "scripts": {
+        "test": "python manage.py test",
+        "black-check": "python -m black --check ."
+      }
+    }
+  }
+}
