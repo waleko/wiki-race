@@ -8,7 +8,11 @@ django.setup()
 from wiki_app.websockets.consumers import GameConsumer
 
 urlpatterns = [
-    path("game_connect/<str:game_id>/<str:user_id>", GameConsumer.as_asgi(), name='game-websocket'),
+    path(
+        "game_connect/<str:game_id>/<str:user_id>",
+        GameConsumer.as_asgi(),
+        name="game-websocket",
+    ),
 ]
 """
 Websockets url patterns

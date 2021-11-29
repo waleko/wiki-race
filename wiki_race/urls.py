@@ -21,12 +21,12 @@ from wiki_parser.views import parse_wiki_page
 from wiki_app.party.views import api_create_party, api_enter_party
 
 urlpatterns = [
-    path('wiki/<str:page_title>', parse_wiki_page),
-    path('admin/', admin.site.urls),
-    path('api/create', api_create_party),
-    path('api/enter', api_enter_party),
-    path('', index_view),
-    path('new', new_party_page),
-    path('join/<str:game_id>', join_page),
-    path('game/<str:game_id>', game_page)
+    path("wiki/<str:page_title>", parse_wiki_page),
+    path("admin/", admin.site.urls),
+    path("api/create", api_create_party),
+    path("api/enter", api_enter_party),
+    path("", index_view),
+    path("new", new_party_page),
+    path("join/<str:game_id>", join_page),
+    path("game/<str:game_id>", game_page),
 ]

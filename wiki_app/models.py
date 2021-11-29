@@ -8,6 +8,7 @@ class User(models.Model):
     """
     Website user. Generated for everyone who will access join, new, or game pages
     """
+
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
 
@@ -15,6 +16,7 @@ class Party(models.Model):
     """
     Party (Lobby, Group). Group of players.
     """
+
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_limit = models.IntegerField()
     """
@@ -27,9 +29,10 @@ class PartyMember(models.Model):
     Member of party (Player). They are connected with the corresponding user and party via a foreign key.
      Also has a name.
     """
+
     name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='members')
+    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="members")
     points = models.IntegerField(default=0)
     """
     Points received in a round
@@ -40,6 +43,7 @@ class AdminRole(models.Model):
     """
     Administrator (Host) -- member who created party. Visible from party via one-to-one relationship.
     """
+
     party = models.OneToOneField(Party, primary_key=True, on_delete=models.CASCADE)
     admin_member = models.OneToOneField(PartyMember, on_delete=models.CASCADE)
 
@@ -48,7 +52,8 @@ class Round(models.Model):
     """
     Round (party round). Single round of wikiracing for party.
     """
-    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='rounds')
+
+    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="rounds")
     start_page = models.CharField(max_length=100)
     """
     Start wiki page title
@@ -77,8 +82,13 @@ class MemberRound(models.Model):
     """
     Member round. Each member's progress in the party round.
     """
-    member = models.ForeignKey(PartyMember, on_delete=models.CASCADE, related_name='rounds')
-    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name='member_rounds')
+
+    member = models.ForeignKey(
+        PartyMember, on_delete=models.CASCADE, related_name="rounds"
+    )
+    round = models.ForeignKey(
+        Round, on_delete=models.CASCADE, related_name="member_rounds"
+    )
     current_page = models.CharField(max_length=100)
     """
     Current page the member is on

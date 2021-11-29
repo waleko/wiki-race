@@ -5,7 +5,12 @@ from django.urls import reverse
 from wiki_app.data.db import get_user, is_admin
 from wiki_app.models import Party, PartyMember
 from wiki_app.websockets import urls
-from wiki_race.settings import USER_COOKIE_NAME, MIN_TIME_LIMIT_SECONDS, MAX_TIME_LIMIT_SECONDS, DEBUG
+from wiki_race.settings import (
+    USER_COOKIE_NAME,
+    MIN_TIME_LIMIT_SECONDS,
+    MAX_TIME_LIMIT_SECONDS,
+    DEBUG,
+)
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
@@ -19,14 +24,21 @@ def new_party_page(request: HttpRequest) -> HttpResponse:
     """
     New lobby page view
     """
-    return render(request, "create.html", context={'min_seconds': MIN_TIME_LIMIT_SECONDS, 'max_seconds': MAX_TIME_LIMIT_SECONDS})
+    return render(
+        request,
+        "create.html",
+        context={
+            "min_seconds": MIN_TIME_LIMIT_SECONDS,
+            "max_seconds": MAX_TIME_LIMIT_SECONDS,
+        },
+    )
 
 
 def join_page(request: HttpRequest, game_id: str) -> HttpResponse:
     """
     Join lobby page view
     """
-    return render(request, "join.html", context={'game_id': game_id})
+    return render(request, "join.html", context={"game_id": game_id})
 
 
 def game_page(request: HttpRequest, game_id: str) -> HttpResponse:
@@ -44,14 +56,21 @@ def game_page(request: HttpRequest, game_id: str) -> HttpResponse:
         response = redirect(join_page, game_id=party.uid)
     else:
         # if already member, generate websocket url
-        uri = reverse("game-websocket", urlconf=urls, kwargs={'game_id': game_id, 'user_id': user.uid})
+        uri = reverse(
+            "game-websocket",
+            urlconf=urls,
+            kwargs={"game_id": game_id, "user_id": user.uid},
+        )
         websocket_protocol = "ws" if DEBUG else "wss"
         # load game page
-        response = render(request, "game.html",
-                          context={
-                              "WEBSOCKET_URL": f"{websocket_protocol}://{request.get_host()}{uri}",
-                              "is_admin": is_admin(party, user)
-                          })
+        response = render(
+            request,
+            "game.html",
+            context={
+                "WEBSOCKET_URL": f"{websocket_protocol}://{request.get_host()}{uri}",
+                "is_admin": is_admin(party, user),
+            },
+        )
     # set user's cookie
     response.set_cookie(USER_COOKIE_NAME, user.uid)
     return response

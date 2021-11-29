@@ -9,7 +9,12 @@ from django.http import HttpRequest
 from django.utils import timezone
 
 from wiki_app.models import User, Party, PartyMember, AdminRole, Round, MemberRound
-from wiki_race.settings import USER_COOKIE_NAME, POINTS_FOR_SOLVING, MIN_TIME_LIMIT_SECONDS, MAX_TIME_LIMIT_SECONDS
+from wiki_race.settings import (
+    USER_COOKIE_NAME,
+    POINTS_FOR_SOLVING,
+    MIN_TIME_LIMIT_SECONDS,
+    MAX_TIME_LIMIT_SECONDS,
+)
 from wiki_race.wiki_api.parse import generate_round, compare_titles
 
 
@@ -124,7 +129,7 @@ def get_initial_round_info(party_round: Round) -> dict:
     Gets information about party round for frontend.
     """
     res = model_to_dict(party_round, fields=["start_page", "end_page"])
-    res['time_limit'] = party_round.party.time_limit
+    res["time_limit"] = party_round.party.time_limit
     return res
 
 
@@ -134,7 +139,7 @@ def get_time_specific_round_info(party_round: Round) -> dict:
     Different to `get_initial_round_info` only in using relative `time_limit`.
     """
     res = get_initial_round_info(party_round)
-    res['time_limit'] = get_left_seconds(party_round)
+    res["time_limit"] = get_left_seconds(party_round)
     return res
 
 
@@ -145,14 +150,13 @@ def generate_leaderboards(party: Party) -> List[dict]:
     # get admin
     admin = party.adminrole.admin_member
     # generate
-    res = [{
-        'name': member.name,
-        'is_admin': admin == member,
-        'points': member.points
-    } for member in party.members.all()]
+    res = [
+        {"name": member.name, "is_admin": admin == member, "points": member.points}
+        for member in party.members.all()
+    ]
     # TODO: try speeding up with query
     # sort by number of points
-    res.sort(key=(lambda x: x['points']), reverse=True)
+    res.sort(key=(lambda x: x["points"]), reverse=True)
 
     return res
 
@@ -167,10 +171,7 @@ def finish_round(party_round: Round) -> dict:
     party_round.save(update_fields=["running"])
     # generate leaderboards
     leaderboards = generate_leaderboards(party_round.party)
-    return {
-        "solution": party_round.solution,
-        "leaderboards": leaderboards
-    }
+    return {"solution": party_round.solution, "leaderboards": leaderboards}
 
 
 def get_latest_party_round(party: Party) -> Optional[Round]:
@@ -204,7 +205,9 @@ def get_left_seconds(party_round: Round) -> int:
     """
     Gets seconds left to round end.
     """
-    seconds_since_start = math.floor((timezone.now() - party_round.start_time).total_seconds())
+    seconds_since_start = math.floor(
+        (timezone.now() - party_round.start_time).total_seconds()
+    )
     return party_round.party.time_limit - seconds_since_start
 
 
@@ -221,7 +224,9 @@ def member_click(member_round: MemberRound, clicked_page: str) -> bool:
         # save time
         member_round.solved_at = get_left_seconds(member_round.round)
         # calculate points
-        member_round.member.points = F("points") + POINTS_FOR_SOLVING + member_round.solved_at
+        member_round.member.points = (
+            F("points") + POINTS_FOR_SOLVING + member_round.solved_at
+        )
         member_round.member.save(update_fields=["points"])
 
     # update current page
@@ -242,7 +247,11 @@ def get_or_create_member_round(party_round: Round, member: PartyMember) -> Membe
     """
     Get or create member round for member.
     """
-    return MemberRound.objects.get_or_create(round=party_round, member=member, defaults={'current_page': party_round.start_page})[0]
+    return MemberRound.objects.get_or_create(
+        round=party_round,
+        member=member,
+        defaults={"current_page": party_round.start_page},
+    )[0]
 
 
 def check_if_time_ran_out(party_round: Round) -> bool:

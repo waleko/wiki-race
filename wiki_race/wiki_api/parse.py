@@ -8,7 +8,7 @@ import requests
 
 from wiki_race.settings import WIKI_API
 
-Article = namedtuple('Article', ['title', 'text', 'properties'])
+Article = namedtuple("Article", ["title", "text", "properties"])
 
 
 def load_wiki_page(title: str) -> Optional[Article]:
@@ -18,17 +18,20 @@ def load_wiki_page(title: str) -> Optional[Article]:
     :return: loaded page as named tuple of (title, text and properties)
     """
     # send request
-    request = requests.get(WIKI_API,
-                           params={'action': 'parse', 'page': title, 'format': 'json', 'redirects': True}
-                           ).json()
+    request = requests.get(
+        WIKI_API,
+        params={"action": "parse", "page": title, "format": "json", "redirects": True},
+    ).json()
     # TODO: mobile enhancements
     # if loading failed return
-    if 'error' in request:
-        logging.error(request['error'])
+    if "error" in request:
+        logging.error(request["error"])
         return None
     # get result
-    parser_result = request['parse']
-    return Article(parser_result['title'], parser_result['text']['*'], parser_result['links'])
+    parser_result = request["parse"]
+    return Article(
+        parser_result["title"], parser_result["text"]["*"], parser_result["links"]
+    )
 
 
 def _get_random_title() -> str:
@@ -36,15 +39,21 @@ def _get_random_title() -> str:
     Gets title of a random wiki page
     """
     # send request
-    request = requests.get(WIKI_API,
-                           params={'action': 'query', 'list': 'random', 'format': 'json', 'rnnamespace': 0}
-                           ).json()
+    request = requests.get(
+        WIKI_API,
+        params={
+            "action": "query",
+            "list": "random",
+            "format": "json",
+            "rnnamespace": 0,
+        },
+    ).json()
     # if request failed, raise error
-    if 'error' in request:
-        raise ValueError(request['error'])
+    if "error" in request:
+        raise ValueError(request["error"])
     # get result
-    random_query = request['query']['random']
-    return random_query[0]['title']
+    random_query = request["query"]["random"]
+    return random_query[0]["title"]
 
 
 def compare_titles(a: str, b: str) -> bool:
@@ -52,7 +61,9 @@ def compare_titles(a: str, b: str) -> bool:
     Compares two titles of wiki pages
     :return: true if titles lead to the same page, false otherwise
     """
-    return urllib.parse.unquote(a).replace('_', ' ') == urllib.parse.unquote(b).replace('_', ' ')
+    return urllib.parse.unquote(a).replace("_", " ") == urllib.parse.unquote(b).replace(
+        "_", " "
+    )
 
 
 def _walk_titles_randomly(start: str, steps: int) -> Tuple[str, List[str]]:
@@ -73,24 +84,32 @@ def _walk_titles_randomly(start: str, steps: int) -> Tuple[str, List[str]]:
     while len(stack) != steps and iters < 2 * steps:
         iters += 1
         # send request
-        resp = requests.get(WIKI_API,
-                            params={'action': 'parse', 'page': cur_page, 'format': 'json', 'redirects': True,
-                                    'prop': ['links']}
-                            ).json()
+        resp = requests.get(
+            WIKI_API,
+            params={
+                "action": "parse",
+                "page": cur_page,
+                "format": "json",
+                "redirects": True,
+                "prop": ["links"],
+            },
+        ).json()
         # if not successful
-        if 'parse' not in resp:
+        if "parse" not in resp:
             # remove last page and try again
             if stack:
                 cur_page = stack.pop()
             continue
 
         # get result
-        parser_result = resp['parse']
+        parser_result = resp["parse"]
         # get namespace zero pages. "Namespace 0" means normal wiki pages. Read more:
         # https://en.wikipedia.org/wiki/Wikipedia:Namespace
-        namespace_zero_links = list(filter(lambda x: x['ns'] == 0, parser_result['links']))
+        namespace_zero_links = list(
+            filter(lambda x: x["ns"] == 0, parser_result["links"])
+        )
         # choose next page randomly
-        cur_page = random.choice(namespace_zero_links)['*']
+        cur_page = random.choice(namespace_zero_links)["*"]
         # ban loops
         if cur_page in stack:
             continue
@@ -111,24 +130,34 @@ def check_valid_transition(from_page: str, to_page: str) -> bool:
     :return: true if reachable, false otherwise
     """
     # send request
-    parser_result = requests.get(WIKI_API,
-                                 params={'action': 'parse', 'page': from_page, 'format': 'json', 'redirects': True,
-                                         'prop': ['links']}
-                                 ).json()['parse']
+    parser_result = requests.get(
+        WIKI_API,
+        params={
+            "action": "parse",
+            "page": from_page,
+            "format": "json",
+            "redirects": True,
+            "prop": ["links"],
+        },
+    ).json()["parse"]
     # get all internal links
-    for e in parser_result['links']:
+    for e in parser_result["links"]:
         # get only namespace 0 links, compare titles
-        if e['ns'] == 0 and compare_titles(e['*'], to_page):
+        if e["ns"] == 0 and compare_titles(e["*"], to_page):
             return True
 
     # if nothing found, return false
     return False
 
 
-RoundPackage = namedtuple('RoundPackage', ['start_page', 'end_page', 'solution'])
+RoundPackage = namedtuple("RoundPackage", ["start_page", "end_page", "solution"])
 
 
-def generate_round(steps_for_seed: int = 8, steps_for_solution: int = 1, given_seed: Optional[str] = None) -> RoundPackage:
+def generate_round(
+    steps_for_seed: int = 8,
+    steps_for_solution: int = 1,
+    given_seed: Optional[str] = None,
+) -> RoundPackage:
     """
     Generates round package: (start page, end page, and solution -- list of all pages between start and end with ends
     inclusive).

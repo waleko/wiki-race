@@ -17,5 +17,9 @@ def parse_wiki_page(request: HttpRequest, page_title: str) -> HttpResponse:
     # format html
     formatted_html = wiki_format_html(page_info.text)
     # respond with page
-    response = render(request, 'parsed-response.html', context={'mw_parser': formatted_html, 'headers': {'X-Frame-Options': 'allow'}})
+    response = render(
+        request,
+        "parsed-response.html",
+        context={"mw_parser": formatted_html, "headers": {"X-Frame-Options": "allow"}},
+    )
     return response
