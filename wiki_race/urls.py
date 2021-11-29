@@ -17,14 +17,14 @@ from django.contrib import admin
 from django.urls import path
 
 from wiki_app.views import index_view, new_party_page, join_page, game_page
-from wiki_parser.views import parse_article
-from wiki_app.party.views import create_party_internal, enter_party_internal
+from wiki_parser.views import parse_wiki_page
+from wiki_app.party.views import api_create_party, api_enter_party
 
 urlpatterns = [
-    path('wiki/<str:article>', parse_article),
+    path('wiki/<str:page_title>', parse_wiki_page),
     path('admin/', admin.site.urls),
-    path('api/create', create_party_internal),
-    path('api/enter', enter_party_internal),
+    path('api/create', api_create_party),
+    path('api/enter', api_enter_party),
     path('', index_view),
     path('new', new_party_page),
     path('join/<str:game_id>', join_page),
