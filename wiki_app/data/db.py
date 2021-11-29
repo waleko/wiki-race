@@ -53,11 +53,11 @@ def is_admin(party: Party, user: User) -> bool:
         return False
 
 
-def check_is_member(party: Party, user: User) -> bool:
+def get_member(party: Party, user: User) -> Optional[PartyMember]:
     try:
-        return party.members.filter(user=user).count() > 0
+        return party.members.get(user=user)
     except:
-        return False
+        return
 
 
 def new_round(party: Party) -> Round:
@@ -145,3 +145,11 @@ def member_click(member_round: MemberRound, clicked_page: str) -> bool:
     member_round.save(update_fields=["solved_at", "current_page"])
 
     return member_solved
+
+
+def have_all_solved(party_round: Round) -> bool:
+    return party_round.member_rounds.filter(solved_at=-1).count() == 0
+
+
+def get_or_create_member_round(party_round: Round, member: PartyMember) -> MemberRound:
+    return MemberRound.objects.get_or_create(round=party_round, member=member, defaults={'current_page': party_round.start_page})[0]

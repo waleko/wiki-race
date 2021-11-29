@@ -5,7 +5,7 @@ from django.urls import reverse
 from wiki_app.data.db import get_user, is_admin
 from wiki_app.models import Party, PartyMember
 from wiki_app.websockets import urls
-from wiki_race.settings import USER_COOKIE_NAME, MIN_TIME_LIMIT_SECONDS, MAX_TIME_LIMIT_SECONDS
+from wiki_race.settings import USER_COOKIE_NAME, MIN_TIME_LIMIT_SECONDS, MAX_TIME_LIMIT_SECONDS, DEBUG
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
@@ -29,7 +29,7 @@ def game_page(request: HttpRequest, game_id: str) -> HttpResponse:
         response = redirect(join_page, game_id=party.uid)
     else:
         uri = reverse("game-websocket", urlconf=urls, kwargs={'game_id': game_id, 'user_id': user.uid})
-        websocket_protocol = "ws" if request.get_host().startswith("127.0.0.1") else "wss"
+        websocket_protocol = "ws" if DEBUG else "wss"
         response = render(request, "game.html",
                           context={
                               "WEBSOCKET_URL": f"{websocket_protocol}://{request.get_host()}{uri}",

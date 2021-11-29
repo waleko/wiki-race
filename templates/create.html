@@ -6,8 +6,10 @@
                 <label class="form-label">Enter your name please</label>
                 <input class="form-control" type="text" required="" name="name" placeholder="Name">
                 <label class="form-label">Time limit for each round (in seconds)</label>
-                <input class="form-range form-control" type="range" name="time_limit_seconds" value="60" min="{{ min_seconds }}" max="{{ max_seconds }}" required="">
-                <button class="btn btn-primary" type="submit">Create</button>
+                <input class="form-range form-control" type="range" name="time_limit_seconds" value="60" min="{{ min_seconds }}" max="{{ max_seconds }}" required="" oninput="this.nextElementSibling.value = secondsToText(this.value)">
+                <output>1:00</output>
+                <br>
+                <button class="btn btn-primary" type="submit">Create lobby</button>
             </form>
         </div>
     </section>

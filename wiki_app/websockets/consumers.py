@@ -2,21 +2,24 @@ import asyncio
 import base64
 import json
 import logging
-from typing import Any
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from wiki_app.data.db import check_is_member, is_admin, new_round, get_round_info, finish_round, member_click, \
-    generate_leaderboards, get_latest_member_round, get_latest_party_round, get_member_round_info
+from wiki_app.data.db import is_admin, new_round, get_round_info, finish_round, member_click, \
+    generate_leaderboards, get_latest_member_round, get_latest_party_round, get_member_round_info, have_all_solved, \
+    get_member, get_or_create_member_round
 from wiki_app.models import User, Party, Round, MemberRound
 from wiki_app.websockets.protocol_handlers import protocol_handler, protocol_handlers
-from wiki_race.wiki_api.parse import get_random_title, check_valid_transition
+from wiki_race.wiki_api.parse import check_valid_transition
 
 
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        await self.init_fields()
+        successful_init = await self.init_fields()
+
+        if not successful_init:
+            await self.close()
 
         # Join room group
         await self.channel_layer.group_add(
@@ -30,7 +33,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send_round_on_return()
 
     @sync_to_async
-    def init_fields(self):
+    def init_fields(self) -> bool:
         user_id = self.scope['url_route']['kwargs']['user_id']
         game_id = self.scope['url_route']['kwargs']['game_id']
 
@@ -38,11 +41,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.party = Party.objects.get(uid=game_id)
         self.room_name = base64.b64encode(bytes(game_id.encode('ascii'))).decode('ascii')
 
-        is_member = check_is_member(self.party, self.user)
-        if not is_member:
-            return
+        self.member = get_member(self.party, self.user)
+        if not self.member:
+            return False
 
         self.is_admin = is_admin(self.party, self.user)
+        return True
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -81,7 +85,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json.dumps(raw_data))
 
-    async def finish_round(self, party_round):
+    async def announce_finish_round(self, party_round):
         # time ended
         await sync_to_async(party_round.refresh_from_db)()
         if not party_round.running:
@@ -92,7 +96,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def start_round_timer(self, party_round: Round):
         # wait for round to end
         await asyncio.sleep(self.party.time_limit)
-        await self.finish_round(party_round)
+        await self.announce_finish_round(party_round)
 
     async def send_error(self, error_text: str):
         await self.send(text_data=json.dumps({'error': error_text}))
@@ -108,11 +112,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         party_round: Round = await sync_to_async(get_latest_party_round)(self.party)
         if not party_round or not party_round.running:
             return
-        member_round: MemberRound = (await sync_to_async(MemberRound.objects.get_or_create)(round=party_round, member__user=self.user, defaults={'current_page': party_round.start_page}))[0]
+
+        member_round: MemberRound = await sync_to_async(get_or_create_member_round)(party_round, self.member)
         round_info = await sync_to_async(get_member_round_info)(member_round)
 
         if round_info['time_limit'] <= 0:
-            await self.finish_round(party_round)
+            await self.announce_finish_round(party_round)
             logging.info(f"{party_round.party.uid} round finished after deadline!")
             return
 
@@ -121,11 +126,16 @@ class GameConsumer(AsyncWebsocketConsumer):
         if member_round.solved_at != -1:
             await self.send_action('solved', {})
 
+    async def finish_if_all_solved(self, party_round: Round):
+        round_should_be_finished = await sync_to_async(have_all_solved)(party_round)
+        if round_should_be_finished:
+            await self.announce_finish_round(party_round)
+
 
 # Handlers
 @protocol_handler("click")
 async def click_handler(self: GameConsumer, data: dict):
-    member_round = await sync_to_async(get_latest_member_round)(self.party, self.user)
+    member_round: MemberRound = await sync_to_async(get_latest_member_round)(self.party, self.user)
     if not member_round:
         return await self.send_error('no active round')
 
@@ -143,7 +153,7 @@ async def click_handler(self: GameConsumer, data: dict):
         if solved:
             await self.update_leaderboards()
             await self.send_action('solved', {})
-        # TODO: finish if everyone has solved
+        await self.finish_if_all_solved(member_round.round)
     except Exception as e:
         logging.error(e)
 
@@ -175,4 +185,4 @@ async def new_round_handler(self: GameConsumer, _: dict):
     if party_round is None:
         return await self.send_error('no active round')
 
-    await self.finish_round(party_round)
+    await self.announce_finish_round(party_round)

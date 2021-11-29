@@ -1,17 +1,18 @@
 // ===== Clock =====
 let seconds = 0;
+
+function secondsToText(seconds) {
+  return Math.floor(seconds / 60) + ':' + (seconds % 60).toLocaleString("en-US", {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+  });
+}
+
 setInterval(function () {
   if (seconds > 0) {
     seconds--;
   }
-  // console.log(minutes, seconds);
-  $("#timer-minutes").text(Math.floor(seconds / 60));
-  $("#timer-seconds").text(
-    (seconds % 60).toLocaleString("en-US", {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    })
-  );
+  $("#text-clock").text(secondsToText(seconds));
   // TODO: colors
 }, 1000);
 
