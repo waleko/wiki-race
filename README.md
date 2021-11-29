@@ -18,7 +18,7 @@
 <br />
 
 <p align="center">
-  <a href="https://wikirace.wlko.me/new">
+  <a href="https://wikirace.wlko.me">
     <img width="750px" src="./.github/assets/round-screenshot.jpg"/>
   </a>
 </p>
