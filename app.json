@@ -6,8 +6,7 @@
          "heroku-postgresql"
       ],
       "scripts": {
-        "test": "python manage.py test",
-        "black-check": "python -m black --check ."
+        "test": "python -m black --check . && python manage.py test"
       }
     }
   }
