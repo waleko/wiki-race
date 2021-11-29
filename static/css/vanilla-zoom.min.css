@@ -92,3 +92,7 @@ body, html {
 opacity: 0.5;
 filter: alpha(opacity=50);
 }
+
+a.mylink {
+  color: #2b2f31 !important;
+}

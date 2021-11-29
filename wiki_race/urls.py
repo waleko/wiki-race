@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import RedirectView
 
 from wiki_app.views import index_view, new_party_page, join_page, game_page
 from wiki_parser.views import parse_wiki_page
@@ -29,4 +30,5 @@ urlpatterns = [
     path("new", new_party_page),
     path("join/<str:game_id>", join_page),
     path("game/<str:game_id>", game_page),
+    path("favicon.ico", RedirectView.as_view(url="/static/logo/favicon.ico", permanent=True))
 ]

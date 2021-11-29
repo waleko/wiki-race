@@ -3,11 +3,14 @@
     <section class="clean-block clean-form dark">
         <div class="container pt-5">
             <form method="get" enctype="application/x-www-form-urlencoded" action="/api/create">
-                <label class="form-label">Enter your name please</label>
+                <h5>Create new lobby</h5>
+                <br>
+                <label class="form-label">Enter your name:</label>
                 <input class="form-control" type="text" required="" name="name" placeholder="Name">
-                <label class="form-label">Time limit for each round (in seconds)</label>
+                <label class="form-label">Choose time given for each round:</label>
                 <input class="form-range form-control" type="range" name="time_limit_seconds" value="60" min="{{ min_seconds }}" max="{{ max_seconds }}" required="" oninput="this.nextElementSibling.value = secondsToText(this.value)">
                 <output>1:00</output>
+                <br>
                 <br>
                 <button class="btn btn-primary" type="submit">Create lobby</button>
             </form>
