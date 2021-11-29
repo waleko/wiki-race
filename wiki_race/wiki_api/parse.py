@@ -154,8 +154,8 @@ RoundPackage = namedtuple("RoundPackage", ["start_page", "end_page", "solution"]
 
 
 def generate_round(
-    steps_for_seed: int = 8,
-    steps_for_solution: int = 1,
+    steps_for_seed: int = 6,
+    steps_for_solution: int = 2,
     given_seed: Optional[str] = None,
 ) -> RoundPackage:
     """

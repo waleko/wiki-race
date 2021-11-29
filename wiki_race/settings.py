@@ -154,8 +154,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Application constants
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 POINTS_FOR_SOLVING = 100
-MIN_TIME_LIMIT_SECONDS = 10
-MAX_TIME_LIMIT_SECONDS = 600
+MIN_TIME_LIMIT_SECONDS = 60
+MAX_TIME_LIMIT_SECONDS = 3600
 
 USER_COOKIE_NAME = "user_id"
 
