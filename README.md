@@ -6,7 +6,7 @@
 
 </h1>
 
-<p>Multiplayer game about traversing links from one wikipedia page to another</p>
+<p>Online game about traversing links from one wikipedia page to another</p>
 
 [![GitHub deployments](https://img.shields.io/github/deployments/waleko/wiki-race/wikirace-waleko?label=deployment&style=flat-square)](https://wikirace.wlko.me)
 [![Uptime Robot ratio (7 days)](https://img.shields.io/uptimerobot/ratio/7/m789895948-df5961bf73008c6084ab8dfa?color=%237673C0&logo=heroku&style=flat-square)](https://wikirace.wlko.me)
@@ -27,13 +27,14 @@
 
 ## What is Wikirace
 
-Wikirace is a multiplayer game about traversing links from one wikipedia page to another.
+Wikirace is a single-/multiplayer game about traversing links from one wikipedia page to another.
 
 Players are given two wikipedia page titles. Their goal is to make their way from the one to the other by only clicking
-links on the wikipedia page they are on. You can read more about rules [here](https://en.wikipedia.org/wiki/Wikipedia:Wiki_Game).
+links on the wikipedia page they are on. The faster you get to the goal page, the more points you get! 
+You can read more about rules [here](https://en.wikipedia.org/wiki/Wikipedia:Wiki_Game).
 
 ## Features
-* Multiplayer
+* Both singleplayer and multiplayer supported
 * Automatic round generation
 * Persistence of state after page refresh 
 * Asynchronous websockets
