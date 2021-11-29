@@ -7,8 +7,8 @@ from django.http import HttpRequest
 from django.utils import timezone
 
 from wiki_app.models import User, Party, PartyMember, AdminRole, Round, MemberRound
-from wiki_race.settings import USER_COOKIE_NAME, POINTS_FOR_SOLVING
-from wiki_race.wiki_api.parse import generate_round, check_valid_transition, compare_titles
+from wiki_race.settings import USER_COOKIE_NAME, POINTS_FOR_SOLVING, MIN_TIME_LIMIT_SECONDS, MAX_TIME_LIMIT_SECONDS
+from wiki_race.wiki_api.parse import generate_round, compare_titles
 
 
 def get_user(request: HttpRequest) -> User:
@@ -22,6 +22,10 @@ def get_user(request: HttpRequest) -> User:
 
 def _create_party(admin_user: User, form: Dict) -> Party:
     time_limit = int(form["time_limit_seconds"])
+
+    if not (MIN_TIME_LIMIT_SECONDS <= time_limit <= MAX_TIME_LIMIT_SECONDS):
+        raise ValueError(f"incorrect time limit: {time_limit}")
+
     admin_name = form["name"]
     party = Party(time_limit=time_limit)
     party.save()

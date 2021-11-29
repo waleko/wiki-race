@@ -5,7 +5,7 @@ from django.urls import reverse
 from wiki_app.data.db import get_user, is_admin
 from wiki_app.models import Party, PartyMember
 from wiki_app.websockets import urls
-from wiki_race.settings import USER_COOKIE_NAME
+from wiki_race.settings import USER_COOKIE_NAME, MIN_TIME_LIMIT_SECONDS, MAX_TIME_LIMIT_SECONDS
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
@@ -13,7 +13,7 @@ def index_view(request: HttpRequest) -> HttpResponse:
 
 
 def new_party_page(request: HttpRequest) -> HttpResponse:
-    return render(request, "create.html")
+    return render(request, "create.html", context={'min_seconds': MIN_TIME_LIMIT_SECONDS, 'max_seconds': MAX_TIME_LIMIT_SECONDS})
 
 
 def join_page(request: HttpRequest, game_id: str) -> HttpResponse:
