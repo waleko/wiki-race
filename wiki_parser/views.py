@@ -1,11 +1,14 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 
 from wiki_parser.page_formatter import wiki_format_html
 from wiki_race.wiki_api.parse import load_wiki_page
 
 
+@cache_page(60 * 60)
 def parse_wiki_page(request: HttpRequest, page_title: str) -> HttpResponse:
+    print(page_title)
     """
     View that gets wiki page html and formats it according to game rules (removes external links, etc.)
     """

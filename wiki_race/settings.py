@@ -88,6 +88,15 @@ DATABASES = {
     }
 }
 
+# Cache
+# https://docs.djangoproject.com/en/3.2/ref/settings/#caches
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache_table",
+    }
+}
+
 # Channel layer
 # https://channels.readthedocs.io/en/stable/topics/channel_layers.html
 CHANNEL_LAYERS = {
