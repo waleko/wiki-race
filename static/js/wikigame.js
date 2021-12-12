@@ -1,3 +1,30 @@
+// ===== Example rounds =====
+const exampleRounds = [
+  ['Milk', 'Mozarella'],
+  ['Albert Einstein', 'International Space Station'],
+  ['Potato', 'Pizza'],
+  ['Burger King', 'Barack Obama'],
+  ['Scientology', 'Berlin Wall'],
+  ['Cat', 'New York City'],
+  ['Poland', 'Brisbane'],
+  ['Diplomacy', 'Video game indistry'],
+  ['French language', 'Elizabeth II']
+]
+
+let suggestedOrigin, suggestedTarget;
+
+function setRandomExampleRound() {
+  const item = exampleRounds[Math.floor(Math.random()*exampleRounds.length)];
+  suggestedOrigin = item[0];
+  suggestedTarget = item[1];
+  $("#suggested-route").text("from " + suggestedOrigin + " to " + suggestedTarget);
+}
+
+function useSuggestedRound() {
+    $("#myorigin").typeahead("val", suggestedOrigin);
+    $("#mytarget").typeahead("val", suggestedTarget);
+}
+
 // ===== Clock =====
 let seconds = 0;
 
@@ -62,6 +89,7 @@ function hideModal() {
 }
 
 function initUI() {
+  setRandomExampleRound();
   if (is_admin) {
     $("#button-waiting").hide();
   } else {
@@ -108,6 +136,7 @@ function roundFinished(data) {
   seconds = 0;
 
   if (is_admin) {
+    setRandomExampleRound();
     $("#button-finish-early").hide();
     $("#button-new-round").prop("disabled", false);
     $("#host-panel").show();
@@ -289,6 +318,7 @@ async function checkExistOriginAndTarget() {
   return true;
 }
 
+// ===== Form =====
 jQuery.validator.addMethod(
   "origin_target_different",
   function (_, element) {

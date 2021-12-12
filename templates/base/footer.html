@@ -34,7 +34,8 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-info" role="alert">
-                  Invite your friends and play together! <button class="btn btn-outline-info" onclick="copyInviteLink()">Copy invite link</button>
+                    Invite your friends and play together!
+                    <button class="btn btn-outline-info" onclick="copyInviteLink()">Copy invite link</button>
                 </div>
                 <h5 id="header-solution">Possible solution: <p id="text-solution"></p></h5>
                 <p>Players:</p>
@@ -44,7 +45,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="host-panel">
+                <div id="host-panel" class="pb-3">
                     <hr>
                     <h5>Set up next round:</h5>
                     <form id="new-round-form">
@@ -78,6 +79,10 @@
                             </div>
                         </div>
                     </form>
+                    <div class="alert alert-secondary">Having a hard time thinking of interesting wiki pages? How about
+                        traversing <a class="alert-link" href="#" onclick="useSuggestedRound(); return false;"
+                                      id="suggested-route"></a>?
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
