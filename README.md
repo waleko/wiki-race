@@ -9,7 +9,7 @@
 <p>Online game about traversing links from one wikipedia page to another</p>
 
 [![GitHub deployments](https://img.shields.io/github/deployments/waleko/wiki-race/wikirace-waleko?label=deployment&style=flat-square)](https://wikirace.wlko.me)
-[![Uptime Robot ratio (7 days)](https://img.shields.io/uptimerobot/ratio/7/m789895948-df5961bf73008c6084ab8dfa?color=%237673C0&logo=heroku&style=flat-square)](https://wikirace.wlko.me)
+[![Hosted on heroku](https://img.shields.io/badge/hosted%20on-heroku-7673C0?style=flat-square&logo=heroku)](https://wikirace.wlko.me)
 [![GitHub top language](https://img.shields.io/github/languages/top/waleko/wiki-race?logo=github&style=flat-square)](https://github.com/waleko/wiki-race)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 [![license](https://img.shields.io/github/license/waleko/wiki-race?style=flat-square)](./LICENSE)
