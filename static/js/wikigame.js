@@ -2,10 +2,14 @@
 let seconds = 0;
 
 function secondsToText(seconds) {
-  return Math.floor(seconds / 60) + ':' + (seconds % 60).toLocaleString("en-US", {
+  return (
+    Math.floor(seconds / 60) +
+    ":" +
+    (seconds % 60).toLocaleString("en-US", {
       minimumIntegerDigits: 2,
       useGrouping: false,
-  });
+    })
+  );
 }
 
 setInterval(function () {
@@ -18,30 +22,33 @@ setInterval(function () {
 
 // ===== UI =====
 
-const star_icon = ' <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">\n' +
-        '  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>\n' +
-        "</svg>";
+const star_icon = ' <i class="bi bi-star-fill"></i>';
 
 function updateLeaderboards(leaderboards) {
   $("#leaderboard-table").empty();
   leaderboards.forEach((record) => {
-    record.name
+    record.name;
     let name = record.name;
     let points = escape(record.points) + " points";
 
-    let name_cell = $("<td></td>").text(name)
+    let name_cell = $("<td></td>").text(name);
     if (record.is_admin) {
-      name_cell.append(star_icon)
+      name_cell.append(star_icon);
     }
     let row = $("<tr></tr>")
-        .append(name_cell)
-        .append($("<td></td>").text(points))
+      .append(name_cell)
+      .append($("<td></td>").text(points));
     $("#leaderboard-table").append(row);
   });
 }
 
 function setSolution(solution) {
-  let text = solution.join(" -> ");
+  let text;
+  if (solution === null) {
+    text = "We could not find a solution :(";
+  } else {
+    text = solution.join(" -> ");
+  }
   $("#text-solution").text(text);
   $("#header-solution").show();
 }
@@ -55,11 +62,10 @@ function hideModal() {
 }
 
 function initUI() {
-  if (!is_admin) {
-    $("#button-new-round")
-      .show()
-      .text("Waiting for host to start...")
-      .prop("disabled", true);
+  if (is_admin) {
+    $("#button-waiting").hide();
+  } else {
+    $("#host-panel").hide();
   }
   $("#header-solution").hide();
   $("#button-new-round-spinner").hide();
@@ -80,15 +86,18 @@ function newGame(data) {
   seconds = data["time_limit"];
   $("#game-iframe")[0].src = "/wiki/" + origin;
 
-  $("#button-new-round").hide();
+  $("#modal-title").text("Game in progress...");
+  hideModal();
+  $("#header-solution").hide();
   if (is_admin) {
     $("#button-new-round-spinner").hide();
     $("#button-finish-early").show();
+    $("#host-panel").hide();
+  } else {
+    $("#button-waiting").text("Waiting for game to finish...");
   }
-
-  $("#modal-title").text("Game in progress...");
-  $("#header-solution").hide();
-  hideModal();
+  $("#myorigin").typeahead("val", "");
+  $("#mytarget").typeahead("val", "");
 }
 
 let solution, leaderboards;
@@ -100,15 +109,10 @@ function roundFinished(data) {
 
   if (is_admin) {
     $("#button-finish-early").hide();
-    $("#button-new-round")
-      .show()
-      .text("Start new round")
-      .prop("disabled", false);
+    $("#button-new-round").prop("disabled", false);
+    $("#host-panel").show();
   } else {
-    $("#button-new-round")
-      .show()
-      .text("Waiting for host to start...")
-      .prop("disabled", true);
+    $("#button-waiting").text("Waiting for host to start...");
   }
 
   updateLeaderboards(leaderboards);
@@ -123,10 +127,6 @@ function forceRedirect(data) {
 }
 
 function solved() {
-  $("#button-new-round")
-    .show()
-    .text("Waiting for game to finish...")
-    .prop("disabled", true);
   $("#modal-title").text("Solved. Well done!");
   showModal();
 }
@@ -193,7 +193,10 @@ function sendAction(actionName, data) {
 }
 
 function requestNewRound() {
-  sendAction("new_round", {});
+  sendAction("new_round", {
+    origin: $("#myorigin").val(),
+    target: $("#mytarget").val(),
+  });
   $("#button-new-round").prop("disabled", true);
   $("#button-new-round-spinner").show();
 }
@@ -211,3 +214,107 @@ window.onmessage = function (event) {
   }
   sendAction(type, event.data);
 };
+
+// ===== Typeahead =====
+$(document).ready(function () {
+  $(".typeahead").typeahead(
+    {
+      hint: true,
+      highlight: true,
+      minLength: 1,
+    },
+    {
+      async: true,
+      source: function (qry, _, async) {
+        $.ajax(
+          "https://en.wikipedia.org/w/api.php?" +
+            $.param({
+              action: "opensearch",
+              search: qry,
+              namespace: 0,
+              redirects: "resolve",
+              origin: "*",
+            }),
+          {}
+        ).done(function (res) {
+          async(res[1]);
+        });
+      },
+      limit: 5,
+    }
+  );
+});
+
+function setRandomOriginAndTitle() {
+  $.ajax(
+    "https://en.wikipedia.org/w/api.php?" +
+      $.param({
+        action: "query",
+        list: "random",
+        rnnamespace: 0,
+        rnlimit: 2,
+        format: "json",
+        origin: "*",
+      }),
+    {}
+  ).done(function (res) {
+    $("#myorigin").typeahead("val", res.query.random[0].title);
+    $("#mytarget").typeahead("val", res.query.random[1].title);
+  });
+}
+
+async function checkPageExists(page) {
+  const resp = await $.ajax(
+    "https://en.wikipedia.org/w/api.php?" +
+      $.param({
+        action: "query",
+        prop: "info",
+        titles: page,
+        format: "json",
+        origin: "*",
+      })
+  ).done(function (res) {});
+  return resp.query.pages["-1"] === undefined;
+}
+
+async function checkExistOriginAndTarget() {
+  if (!(await checkPageExists($("#myorigin").val()))) {
+    alert("Please select origin to be a correct wiki page title");
+    return false;
+  }
+  if (!(await checkPageExists($("#mytarget").val()))) {
+    alert("Please select origin to be a correct wiki page title");
+    return false;
+  }
+  return true;
+}
+
+jQuery.validator.addMethod(
+  "origin_target_different",
+  function (_, element) {
+    return (
+      this.optional(element) || $("#myorigin").val() !== $("#mytarget").val()
+    );
+  },
+  "Origin and target pages must be different!"
+);
+
+$("#new-round-form")
+  .submit(function (e) {
+    e.preventDefault();
+    checkExistOriginAndTarget().then(function (res) {
+      if (res) requestNewRound();
+    });
+  })
+  .validate({
+    rules: {
+      origin: {
+        required: true,
+        origin_target_different: true,
+      },
+      target: {
+        required: true,
+        origin_target_different: true,
+      },
+    },
+  });

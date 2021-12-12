@@ -62,9 +62,10 @@ class Round(models.Model):
     """
     End wiki page title
     """
-    solution = ArrayField(models.CharField(max_length=100))
+    solution = ArrayField(models.CharField(max_length=100), null=True)
     """
-    Solution: array of page titles leading from start to end via internal links (ends inclusive).
+    Solution: array of page titles leading from start to end via internal links (ends inclusive). 
+    Null if no solution was found.
     
     NOTICE: requires postgres
     """

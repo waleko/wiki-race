@@ -4,6 +4,7 @@ import urllib.parse
 from collections import namedtuple
 from typing import Optional, Tuple, List
 
+import aiohttp
 import requests
 
 from wiki_race.settings import WIKI_API
@@ -66,7 +67,39 @@ def compare_titles(a: str, b: str) -> bool:
     )
 
 
-def _walk_titles_randomly(start: str, steps: int) -> Tuple[str, List[str]]:
+async def _get_next_page(cur_page: str, walk_backwards: bool) -> Optional[str]:
+    """
+    Gets random adjacent wiki page.
+    """
+    prop = "linkshere" if walk_backwards else "links"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            WIKI_API,
+            params={
+                "action": "query",
+                "titles": cur_page,
+                "format": "json",
+                "prop": [prop],
+            },
+        ) as resp:
+            data = await resp.json()
+            # if not successful
+            if "query" not in data:
+                return
+            # get result
+            parser_result = list(data["query"]["pages"].values())[0]
+            # get namespace zero pages. "Namespace 0" means normal wiki pages. Read more:
+            # https://en.wikipedia.org/wiki/Wikipedia:Namespace
+            namespace_zero_links = list(
+                filter(lambda x: x["ns"] == 0, parser_result[prop])
+            )
+            # choose next page randomly
+            return random.choice(namespace_zero_links)["title"]
+
+
+async def _walk_titles_randomly(
+    start: str, steps: int, walk_backwards: bool = False
+) -> Tuple[str, List[str]]:
     """
     Internal function for selecting a new wiki page title by walking from given page
     :param start: Title of starting wiki page
@@ -84,38 +117,19 @@ def _walk_titles_randomly(start: str, steps: int) -> Tuple[str, List[str]]:
     while len(stack) != steps and iters < 2 * steps:
         iters += 1
         # send request
-        resp = requests.get(
-            WIKI_API,
-            params={
-                "action": "parse",
-                "page": cur_page,
-                "format": "json",
-                "redirects": True,
-                "prop": ["links"],
-            },
-        ).json()
-        # if not successful
-        if "parse" not in resp:
+        next_page: str = await _get_next_page(cur_page, walk_backwards)
+        # check result
+        if not next_page:
             # remove last page and try again
             if stack:
                 cur_page = stack.pop()
             continue
-
-        # get result
-        parser_result = resp["parse"]
-        # get namespace zero pages. "Namespace 0" means normal wiki pages. Read more:
-        # https://en.wikipedia.org/wiki/Wikipedia:Namespace
-        namespace_zero_links = list(
-            filter(lambda x: x["ns"] == 0, parser_result["links"])
-        )
-        # choose next page randomly
-        cur_page = random.choice(namespace_zero_links)["*"]
         # ban loops
-        if cur_page in stack:
+        if next_page in stack:
             continue
         # add to stack
-        stack.append(cur_page)
-
+        stack.append(next_page)
+        cur_page = next_page
     # if path was not built, raise error
     if len(stack) != steps:
         raise ValueError(f"couldn't get out of {start}!")
@@ -150,40 +164,57 @@ def check_valid_transition(from_page: str, to_page: str) -> bool:
     return False
 
 
-RoundPackage = namedtuple("RoundPackage", ["start_page", "end_page", "solution"])
-
-
-def generate_round(
-    steps_for_seed: int = 6,
-    steps_for_solution: int = 2,
-    given_seed: Optional[str] = None,
-) -> RoundPackage:
+async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]:
     """
-    Generates round package: (start page, end page, and solution -- list of all pages between start and end with ends
-    inclusive).
-    :param steps_for_seed: Amount of link clicks from seed to start page
-    :param steps_for_solution: Amount of link clicks from start page to end page
-    :param given_seed: Optionally, will use this given seed instead of a random one
-    :return: start page, end page, and solution
+    Solves round, i.e. traverses from origin to target
+    :return: list of wiki page titles from origin to target page, or `None` if solution not found
     """
-    # attempts of generating package
-    attempts = 0
-    while attempts < 10:
-        try:
-            # get seed
-            if given_seed:
-                seed = given_seed
-            else:
-                seed = _get_random_title()
+    try:
+        origin_page, prequel = await _walk_titles_randomly(
+            origin_page, 2, walk_backwards=False
+        )
+        target_page, sequel = await _walk_titles_randomly(
+            target_page, 2, walk_backwards=True
+        )
 
-            # get start
-            start, _ = _walk_titles_randomly(seed, steps_for_seed)
-            # get end and solution
-            dest, solution = _walk_titles_randomly(start, steps_for_solution)
-            # return package
-            return start, dest, solution
-        except:
-            # if failed, try again
-            attempts += 1
-    # if could not generate round (for instance, page has no internal links)
-    raise ValueError("couldn't generate round!")
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                "https://api.sixdegreesofwikipedia.com/paths",  # TODO: devise a better solution
+                json={"source": origin_page, "target": target_page},
+            ) as resp:
+                if not resp.ok:
+                    raise ValueError(resp.reason)
+                data = await resp.json()
+                pages = data["pages"]
+                paths = data["paths"]
+                if not paths:
+                    raise ValueError(f"paths empty: {origin_page} -> {target_page}")
+                path = paths[0]
+                solution: List[str] = []
+                for num in path:
+                    if str(num) not in pages:
+                        raise ValueError(
+                            f"{num} not in pages of {origin_page} -> {target_page}"
+                        )
+                    solution.append(pages[str(num)]["title"])
+                full_solution = prequel[:-1] + solution + sequel[:-1][::-1]
+                print(prequel, solution, sequel)
+                print(full_solution)
+                return full_solution
+    except Exception as e:
+        logging.warning(f"Unable to solve: {origin_page} -> f{target_page}", exc_info=e)
+        return
+
+
+def check_page_exists(page: str) -> bool:
+    """
+    Checks whether wiki page with given title exists
+    """
+    parser_result = requests.get(
+        WIKI_API,
+        params={"action": "query", "prop": "info", "titles": page, "format": "json"},
+    ).json()
+    try:
+        return "-1" not in parser_result["query"]["pages"]
+    except KeyError:
+        return False

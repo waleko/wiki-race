@@ -8,7 +8,9 @@
                 <label class="form-label">Enter your name:</label>
                 <input class="form-control" type="text" required="" name="name" placeholder="Name">
                 <label class="form-label">Choose time given for each round:</label>
-                <input class="form-range form-control" type="range" name="time_limit_seconds" value="600" min="{{ min_seconds }}" max="{{ max_seconds }}" required="" oninput="this.nextElementSibling.value = secondsToText(this.value)">
+                <input class="form-range form-control" type="range" name="time_limit_seconds" value="600"
+                       min="{{ min_seconds }}" max="{{ max_seconds }}" required=""
+                       oninput="this.nextElementSibling.value = secondsToText(this.value)">
                 <output>10:00</output>
                 <br>
                 <br>

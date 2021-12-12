@@ -1,8 +1,8 @@
 import logging
 import math
-from collections import namedtuple
 from typing import Dict, List, Optional
 
+from asgiref.sync import sync_to_async
 from django.db.models import F
 from django.forms import model_to_dict
 from django.http import HttpRequest
@@ -15,7 +15,7 @@ from wiki_race.settings import (
     MIN_TIME_LIMIT_SECONDS,
     MAX_TIME_LIMIT_SECONDS,
 )
-from wiki_race.wiki_api.parse import generate_round, compare_titles
+from wiki_race.wiki_api.parse import compare_titles, solve_round, check_page_exists
 
 
 def get_user(request: HttpRequest) -> User:
@@ -107,14 +107,23 @@ def get_member(party: Party, user: User) -> Optional[PartyMember]:
         return
 
 
-def new_round(party: Party) -> Round:
+def new_round(party: Party, data: dict) -> Round:
     """
     Creates new round for party. Doesn't check if previous round has finished.
     """
-    # generate round package
-    start, end, solution = generate_round()
+    # make round package
+    start = data["origin"]
+    end = data["target"]
+    if start == end:
+        raise ValueError("Start and end pages must be different!")
+    if not check_page_exists(start):
+        raise ValueError(f"Start page {start} doesn't exist")
+    if not check_page_exists(end):
+        raise ValueError(f"End page {end} doesn't exist")
+    # solution will be generated asynchronously separately, see `start_solving`
+
     # create round
-    party_round = Round(party=party, start_page=start, end_page=end, solution=solution)
+    party_round = Round(party=party, start_page=start, end_page=end, solution=None)
     party_round.save()
     # create member round for each member
     for member in party.members.all():
@@ -122,6 +131,23 @@ def new_round(party: Party) -> Round:
         member_round.save()
     # return round
     return party_round
+
+
+async def start_solving(party_round: Round) -> None:
+    """
+    Asynchronously solves party round
+    """
+    solution = await solve_round(party_round.start_page, party_round.end_page)
+    party_round.solution = solution
+    await sync_to_async(party_round.save)(update_fields=["solution"])
+    if solution:
+        logging.info(
+            f"Solved round: {party_round.start_page} -> {party_round.end_page}"
+        )
+    else:
+        logging.warning(
+            f"Failed to solve: {party_round.start_page} -> {party_round.end_page}"
+        )
 
 
 def get_initial_round_info(party_round: Round) -> dict:
@@ -166,6 +192,8 @@ def finish_round(party_round: Round) -> dict:
     Finishes party round. Doesn't check whether party round is already finished.
     :return: finished round info for frontend
     """
+    # refresh solution
+    party_round.refresh_from_db()
     # set running to false
     party_round.running = False
     party_round.save(update_fields=["running"])

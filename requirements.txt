@@ -8,3 +8,4 @@ requests~=2.26.0
 channels~=3.0.4
 channels-redis~=3.3.1
 asgiref~=3.4.1
+aiohttp~=3.8.1

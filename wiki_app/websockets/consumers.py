@@ -20,6 +20,7 @@ from wiki_app.data.db import (
     get_member,
     get_or_create_member_round,
     check_if_time_ran_out,
+    start_solving,
 )
 from wiki_app.models import User, Party, Round, MemberRound
 from wiki_app.websockets.protocol_handlers import protocol_handler, protocol_handlers
@@ -209,7 +210,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
 @protocol_handler("new_round")
-async def new_round_handler(self: GameConsumer, _: dict):
+async def new_round_handler(self: GameConsumer, data: dict):
     """
     New round websocket command handler
     """
@@ -223,7 +224,14 @@ async def new_round_handler(self: GameConsumer, _: dict):
         return await self.send_error("another round is running")
 
     # create party round
-    party_round = await sync_to_async(new_round)(self.party)
+    try:
+        party_round = await sync_to_async(new_round)(self.party, data)
+    except Exception as e:
+        logging.error(e)
+        return await self.send_error("unable to create new round")
+    # start looking for solution
+    asyncio.ensure_future(start_solving(party_round))
+
     # get info for frontend
     round_info = await sync_to_async(get_initial_round_info)(party_round)
     # send info
