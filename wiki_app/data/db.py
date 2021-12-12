@@ -114,7 +114,7 @@ def new_round(party: Party, data: dict) -> Round:
     # make round package
     start = data["origin"]
     end = data["target"]
-    if start == end:
+    if compare_titles(start, end):
         raise ValueError("Start and end pages must be different!")
     if not check_page_exists(start):
         raise ValueError(f"Start page {start} doesn't exist")
