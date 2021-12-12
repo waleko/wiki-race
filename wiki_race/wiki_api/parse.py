@@ -97,7 +97,9 @@ async def _get_next_page(cur_page: str, walk_backwards: bool) -> Optional[str]:
             return random.choice(namespace_zero_links)["title"]
 
 
-async def _walk_titles_randomly(start: str, steps: int, walk_backwards: bool = False) -> Tuple[str, List[str]]:
+async def _walk_titles_randomly(
+    start: str, steps: int, walk_backwards: bool = False
+) -> Tuple[str, List[str]]:
     """
     Internal function for selecting a new wiki page title by walking from given page
     :param start: Title of starting wiki page
@@ -168,8 +170,12 @@ async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]
     :return: list of wiki page titles from origin to target page, or `None` if solution not found
     """
     try:
-        origin_page, prequel = await _walk_titles_randomly(origin_page, 2, walk_backwards=False)
-        target_page, sequel = await _walk_titles_randomly(target_page, 2, walk_backwards=True)
+        origin_page, prequel = await _walk_titles_randomly(
+            origin_page, 2, walk_backwards=False
+        )
+        target_page, sequel = await _walk_titles_randomly(
+            target_page, 2, walk_backwards=True
+        )
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
