@@ -1,36 +1,41 @@
 <footer class="page-footer dark">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-3"></div>
-                <div class="col-sm-3">
-                    <h5>Get started</h5>
-                    <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/new">Play</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-3">
-                    <h5>About us</h5>
-                    <ul>
-                        <li><a href="https://github.com/waleko/wiki_race">Github page</a></li>
-                        <li><a href="mailto:a.kovrigin0@gmail.com">Contact me</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-3"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3">
+                <h5>Get started</h5>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/new">Play</a></li>
+                </ul>
             </div>
+            <div class="col-sm-3">
+                <h5>About us</h5>
+                <ul>
+                    <li><a href="https://github.com/waleko/wiki_race">Github page</a></li>
+                    <li><a href="mailto:a.kovrigin0@gmail.com">Contact me</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-3"></div>
         </div>
-        <div class="footer-copyright">
-            <p>© 2021 Alexander Kovrigin</p>
-        </div>
+    </div>
+    <div class="footer-copyright">
+        <p>© 2021 Alexander Kovrigin</p>
+    </div>
 </footer>
-<div class="modal fade" role="dialog" tabindex="-1" id="modal-1" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+<div class="modal fade" role="dialog" tabindex="-1" id="modal-1" aria-hidden="true" data-keyboard="false"
+     data-backdrop="static">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="modal-title">Waiting for game to start...</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" id="button-close" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="button-close"
+                        aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <a></a>
+                </div>
                 <h5 id="header-solution">Possible solution: <p id="text-solution"></p></h5>
                 <p>Players:</p>
                 <div class="table-responsive">
@@ -39,11 +44,45 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="host-panel">
+                    <hr>
+                    <h5>Set up next round:</h5>
+                    <form id="new-round-form">
+                        <div class="row m-1 pt-3" style="padding-bottom: 50px;">
+                            <div class="col-3">
+                                <label>
+                                    Origin page
+                                    <input class="typeahead form-control" type="text" placeholder="Origin" name="origin"
+                                           id="myorigin" required>
+                                </label>
+                            </div>
+                            <div class="col-1">
+                                <button type="button" class="btn btn-secondary px-2 myshuffle" aria-label="Shuffle"
+                                        onclick="setRandomOriginAndTitle()">
+                                    <i class="bi bi-shuffle"></i>
+                                </button>
+                            </div>
+                            <div class="col-3">
+                                <label>
+                                    Target page
+                                    <input class="typeahead form-control" type="text" placeholder="Target" name="target"
+                                           id="mytarget" required>
+                                </label>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary" type="submit" id="button-new-round">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                          id="button-new-round-spinner"></span>
+                                    Start new round
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" type="button" id="button-new-round" onclick="requestNewRound()">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="button-new-round-spinner"></span>
-                    Start new round
+                <button class="btn btn-primary" type="submit" id="button-waiting" disabled>
+                    Waiting for host to start...
                 </button>
                 <button class="btn btn-secondary" type="button" id="button-finish-early" onclick="requestFinishEarly()">
                     Finish round early
@@ -53,12 +92,14 @@
     </div>
 </div>
 
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
-    <script src="/static/js/vanilla-zoom.js"></script>
-    <script src="/static/js/theme.js"></script>
-    <script src="/static/js/wikigame.js"></script>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="/static/js/vanilla-zoom.js"></script>
+<script src="/static/js/theme.js"></script>
+<script src="/static/js/typeahead.bundle.js"></script>
+<script src="/static/js/wikigame.js"></script>
 </body>
 
 </html>

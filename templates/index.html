@@ -1,7 +1,8 @@
 {% load static %}
 {% include "base/header.html" %}
 <main class="page landing-page">
-    <section class="clean-block clean-hero" style="background-image:url({% static 'img/scenery/my-background.jpeg' %});color:rgba(70, 70, 140, 0.85);">
+    <section class="clean-block clean-hero"
+             style="background-image:url({% static 'img/scenery/my-background.jpeg' %});color:rgba(70, 70, 140, 0.85);">
         <div class="text">
             <h2>Wikirace</h2>
             <p>Open-source <b>single-/multiplayer</b> online game for competitive wikiracing</p>
@@ -20,11 +21,15 @@
                 <h2 class="text-info">Info</h2>
             </div>
             <div class="row align-items-center">
-                <div class="col-md-6"><img class="img-thumbnail" src="{% static 'img/wikirace/round-screenshot.jpg' %}"></div>
+                <div class="col-md-6"><img class="img-thumbnail" src="{% static 'img/wikirace/round-screenshot.jpg' %}">
+                </div>
                 <div class="col-md-6">
                     <h3>What is wikiracing</h3>
                     <div class="getting-started-info">
-                        <p>Wikiracing is a game using the Wikipedia online encyclopedia which focuses on traversing links from one page to another. <a class="mylink" href="https://en.wikipedia.org/wiki/Wikiracing">Read more</a></p>
+                        <p>Wikiracing is a game using the Wikipedia online encyclopedia which focuses on traversing
+                            links from one page to another. <a class="mylink"
+                                                               href="https://en.wikipedia.org/wiki/Wikiracing">Read
+                                more</a></p>
                     </div>
                     <a href="/new">
                         <button class="btn btn-outline-primary btn-lg" type="button">Play now</button>
@@ -37,24 +42,34 @@
         <div class="container">
             <div class="block-heading">
                 <h2 class="text-info">Project features</h2>
-                <p>This website is a first year educational project for <a class="mylink" href="https://spb.hse.ru/en/ba/appmath/">AMI at HSE SPb</a>. More information available on the <a class="mylink" href="https://github.com/waleko/wiki_race">Github page</a>.</p>
+                <p>This website is a first year educational project for <a class="mylink"
+                                                                           href="https://spb.hse.ru/en/ba/appmath/">AMI
+                    at HSE SPb</a>. More information available on the <a class="mylink"
+                                                                         href="https://github.com/waleko/wiki_race">Github
+                    page</a>.</p>
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-5 feature-box"><i class="icon-feed icon"></i>
                     <h4>Asynchronous websockets</h4>
-                    <p>Data exchange with server during the game is fulfilled via asynchronous websockets. This allows for seamless multiplayer game process and doesn't require inefficient and complicated poll requests.</p>
+                    <p>Data exchange with server during the game is fulfilled via asynchronous websockets. This allows
+                        for seamless multiplayer game process and doesn't require inefficient and complicated poll
+                        requests.</p>
                 </div>
                 <div class="col-md-5 feature-box"><i class="icon-docs icon"></i>
                     <h4>Database</h4>
-                    <p>This project uses Postgresql database for main data storage and Redis database for storing short-term websocket information. Both these databases are both managed by Heroku platform and allow for automatic scaling.</p>
+                    <p>This project uses Postgresql database for main data storage and Redis database for storing
+                        short-term websocket information. Both these databases are both managed by Heroku platform and
+                        allow for automatic scaling.</p>
                 </div>
                 <div class="col-md-5 feature-box"><i class="icon-check icon"></i>
                     <h4>Auto-deploy and CI/CD</h4>
-                    <p>Deployment and CI/CD is fulfilled via Heroku platform. It makes possible to create simple but flexible pipeline for this project.</p>
+                    <p>Deployment and CI/CD is fulfilled via Heroku platform. It makes possible to create simple but
+                        flexible pipeline for this project.</p>
                 </div>
                 <div class="col-md-5 feature-box"><i class="icon-people icon"></i>
                     <h4>Multiplayer</h4>
-                    <p>Wikirace can be played not only in singleplayer, it's multiplayer-ready as well. Play with all your friends. Who solves wikirace the fastest, gets more points!</p>
+                    <p>Wikirace can be played not only in singleplayer, it's multiplayer-ready as well. Play with all
+                        your friends. Who solves wikirace the fastest, gets more points!</p>
                 </div>
             </div>
         </div>

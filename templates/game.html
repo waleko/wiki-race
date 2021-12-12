@@ -1,4 +1,5 @@
 {% include "base/header.html" %}
+
 <main class="page">
     <section class="clean-block mt-5">
         <div class="row p-3 m-3">
@@ -23,8 +24,8 @@
                 <div class="row-container" style="width: 100%;">
                     <div class="second-row">
                         <script>
-                            conf['WEBSOCKET_URL'] = "{{ WEBSOCKET_URL }}";
-                            let is_admin = ("{{ is_admin }}" === "True");
+                          conf['WEBSOCKET_URL'] = "{{ WEBSOCKET_URL }}";
+                          let is_admin = ("{{ is_admin }}" === "True");
                         </script>
                         <iframe id="game-iframe" onload="resizeIframe(this)" src="/wiki/Wikiracing"></iframe>
                     </div>
