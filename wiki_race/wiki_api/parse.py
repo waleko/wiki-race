@@ -22,7 +22,12 @@ async def load_wiki_page(title: str) -> Optional[Article]:
     async with aiohttp.ClientSession() as session:
         async with session.get(
             WIKI_API,
-            params={"action": "parse", "page": title, "format": "json", "redirects": 'true'},
+            params={
+                "action": "parse",
+                "page": title,
+                "format": "json",
+                "redirects": "true",
+            },
         ) as resp:
             data = await resp.json()
             # TODO: mobile enhancements
@@ -33,7 +38,9 @@ async def load_wiki_page(title: str) -> Optional[Article]:
             # get result
             parser_result = data["parse"]
             return Article(
-                parser_result["title"], parser_result["text"]["*"], parser_result["links"]
+                parser_result["title"],
+                parser_result["text"]["*"],
+                parser_result["links"],
             )
 
 
@@ -43,9 +50,9 @@ def compare_titles(a: str, b: str) -> bool:
     :return: true if titles lead to the same page, false otherwise
     """
     # make trivial check
-    trivial_equal = urllib.parse.unquote(a.lower()).replace("_", " ") == urllib.parse.unquote(b.lower()).replace(
+    trivial_equal = urllib.parse.unquote(a.lower()).replace(
         "_", " "
-    )
+    ) == urllib.parse.unquote(b.lower()).replace("_", " ")
     if trivial_equal:
         return True
     # make wiki api check
