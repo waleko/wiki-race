@@ -67,37 +67,37 @@ def compare_titles(a: str, b: str) -> bool:
     )
 
 
-async def _get_next_page(cur_page: str) -> Optional[str]:
+async def _get_next_page(cur_page: str, walk_backwards: bool) -> Optional[str]:
     """
-    Gets random adjacent wiki page
+    Gets random adjacent wiki page.
     """
+    prop = "linkshere" if walk_backwards else "links"
     async with aiohttp.ClientSession() as session:
         async with session.get(
             WIKI_API,
             params={
-                "action": "parse",
-                "page": cur_page,
+                "action": "query",
+                "titles": cur_page,
                 "format": "json",
-                "redirects": "true",
-                "prop": ["links"],
+                "prop": [prop],
             },
         ) as resp:
             data = await resp.json()
             # if not successful
-            if "parse" not in data:
+            if "query" not in data:
                 return
             # get result
-            parser_result = data["parse"]
+            parser_result = list(data["query"]["pages"].values())[0]
             # get namespace zero pages. "Namespace 0" means normal wiki pages. Read more:
             # https://en.wikipedia.org/wiki/Wikipedia:Namespace
             namespace_zero_links = list(
-                filter(lambda x: x["ns"] == 0, parser_result["links"])
+                filter(lambda x: x["ns"] == 0, parser_result[prop])
             )
             # choose next page randomly
-            return random.choice(namespace_zero_links)["*"]
+            return random.choice(namespace_zero_links)["title"]
 
 
-async def _walk_titles_randomly(start: str, steps: int) -> Tuple[str, List[str]]:
+async def _walk_titles_randomly(start: str, steps: int, walk_backwards: bool = False) -> Tuple[str, List[str]]:
     """
     Internal function for selecting a new wiki page title by walking from given page
     :param start: Title of starting wiki page
@@ -115,7 +115,7 @@ async def _walk_titles_randomly(start: str, steps: int) -> Tuple[str, List[str]]
     while len(stack) != steps and iters < 2 * steps:
         iters += 1
         # send request
-        next_page: str = await _get_next_page(cur_page)
+        next_page: str = await _get_next_page(cur_page, walk_backwards)
         # check result
         if not next_page:
             # remove last page and try again
@@ -168,8 +168,8 @@ async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]
     :return: list of wiki page titles from origin to target page, or `None` if solution not found
     """
     try:
-        origin_page, prequel = await _walk_titles_randomly(origin_page, 2)
-        target_page, sequel = await _walk_titles_randomly(target_page, 2)
+        origin_page, prequel = await _walk_titles_randomly(origin_page, 2, walk_backwards=False)
+        target_page, sequel = await _walk_titles_randomly(target_page, 2, walk_backwards=True)
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -192,6 +192,8 @@ async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]
                         )
                     solution.append(pages[str(num)]["title"])
                 full_solution = prequel[:-1] + solution + sequel[:-1][::-1]
+                print(prequel, solution, sequel)
+                print(full_solution)
                 return full_solution
     except Exception as e:
         logging.warning(f"Unable to solve: {origin_page} -> f{target_page}", exc_info=e)
