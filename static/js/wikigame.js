@@ -7,7 +7,7 @@ const exampleRounds = [
   ['Scientology', 'Berlin Wall'],
   ['Cat', 'New York City'],
   ['Poland', 'Brisbane'],
-  ['Diplomacy', 'Video game indistry'],
+  ['Diplomacy', 'Video game industry'],
   ['French language', 'Elizabeth II']
 ]
 

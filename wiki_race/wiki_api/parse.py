@@ -12,49 +12,29 @@ from wiki_race.settings import WIKI_API
 Article = namedtuple("Article", ["title", "text", "properties"])
 
 
-def load_wiki_page(title: str) -> Optional[Article]:
+async def load_wiki_page(title: str) -> Optional[Article]:
     """
     Loads HTML of the wiki page by its title
     :param title: page title
     :return: loaded page as named tuple of (title, text and properties)
     """
     # send request
-    request = requests.get(
-        WIKI_API,
-        params={"action": "parse", "page": title, "format": "json", "redirects": True},
-    ).json()
-    # TODO: mobile enhancements
-    # if loading failed return
-    if "error" in request:
-        logging.error(request["error"])
-        return None
-    # get result
-    parser_result = request["parse"]
-    return Article(
-        parser_result["title"], parser_result["text"]["*"], parser_result["links"]
-    )
-
-
-def _get_random_title() -> str:
-    """
-    Gets title of a random wiki page
-    """
-    # send request
-    request = requests.get(
-        WIKI_API,
-        params={
-            "action": "query",
-            "list": "random",
-            "format": "json",
-            "rnnamespace": 0,
-        },
-    ).json()
-    # if request failed, raise error
-    if "error" in request:
-        raise ValueError(request["error"])
-    # get result
-    random_query = request["query"]["random"]
-    return random_query[0]["title"]
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            WIKI_API,
+            params={"action": "parse", "page": title, "format": "json", "redirects": 'true'},
+        ) as resp:
+            data = await resp.json()
+            # TODO: mobile enhancements
+            # if loading failed return
+            if "error" in data:
+                logging.error(data["error"])
+                return None
+            # get result
+            parser_result = data["parse"]
+            return Article(
+                parser_result["title"], parser_result["text"]["*"], parser_result["links"]
+            )
 
 
 def compare_titles(a: str, b: str) -> bool:
@@ -62,6 +42,13 @@ def compare_titles(a: str, b: str) -> bool:
     Compares two titles of wiki pages
     :return: true if titles lead to the same page, false otherwise
     """
+    # make trivial check
+    trivial_equal = urllib.parse.unquote(a.lower()).replace("_", " ") == urllib.parse.unquote(b.lower()).replace(
+        "_", " "
+    )
+    if trivial_equal:
+        return True
+    # make wiki api check
     parser_result = requests.get(
         WIKI_API,
         params={
@@ -148,31 +135,33 @@ async def _walk_titles_randomly(
     return cur_page, [start] + stack
 
 
-def check_valid_transition(from_page: str, to_page: str) -> bool:
+async def check_valid_transition(from_page: str, to_page: str) -> bool:
     """
     Checks whether `to_page` wiki page can be reached by clicking an internal link from `from_page` wiki page.
     Used for verifying user's wikirace solution.
     :return: true if reachable, false otherwise
     """
     # send request
-    parser_result = requests.get(
-        WIKI_API,
-        params={
-            "action": "parse",
-            "page": from_page,
-            "format": "json",
-            "redirects": True,
-            "prop": ["links"],
-        },
-    ).json()["parse"]
-    # get all internal links
-    for e in parser_result["links"]:
-        # get only namespace 0 links, compare titles
-        if e["ns"] == 0 and compare_titles(e["*"], to_page):
-            return True
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            WIKI_API,
+            params={
+                "action": "parse",
+                "page": from_page,
+                "format": "json",
+                "redirects": True,
+                "prop": ["links"],
+            },
+        ) as resp:
+            parser_result = (await resp.json())["parse"]
+            # get all internal links
+            for e in parser_result["links"]:
+                # get only namespace 0 links, compare titles
+                if e["ns"] == 0 and compare_titles(e["*"], to_page):
+                    return True
 
-    # if nothing found, return false
-    return False
+            # if nothing found, return false
+            return False
 
 
 async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]:

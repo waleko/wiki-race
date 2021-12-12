@@ -1,5 +1,6 @@
 import logging
 
+from asgiref.sync import async_to_sync
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
@@ -15,7 +16,7 @@ def parse_wiki_page(request: HttpRequest, page_title: str) -> HttpResponse:
     View that gets wiki page html and formats it according to game rules (removes external links, etc.)
     """
     # get wiki page data
-    page_info = load_wiki_page(page_title)
+    page_info = async_to_sync(load_wiki_page)(page_title)
     # if failed, return not found
     if page_info is None:
         return HttpResponseNotFound()
