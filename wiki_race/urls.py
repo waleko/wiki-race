@@ -29,7 +29,7 @@ urlpatterns = [
     path("", index_view),
     path("new", new_party_page),
     path("join/<str:game_id>", join_page),
-    path("game/<str:game_id>", game_page),
+    path("game/<str:game_id>", game_page, name='game-page'),
     path(
         "favicon.ico",
         RedirectView.as_view(url="/static/logo/favicon.ico", permanent=True),

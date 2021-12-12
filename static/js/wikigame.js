@@ -318,3 +318,7 @@ $("#new-round-form")
       },
     },
   });
+
+function copyInviteLink() {
+  navigator.clipboard.writeText(conf["GAME_URL"]);
+}

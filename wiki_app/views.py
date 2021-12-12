@@ -68,6 +68,7 @@ def game_page(request: HttpRequest, game_id: str) -> HttpResponse:
             "game.html",
             context={
                 "WEBSOCKET_URL": f"{websocket_protocol}://{request.get_host()}{uri}",
+                "GAME_URL": f"{request.get_host()}{reverse('game-page', kwargs={'game_id': game_id})}",
                 "is_admin": is_admin(party, user),
             },
         )

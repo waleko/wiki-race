@@ -25,6 +25,7 @@
                     <div class="second-row">
                         <script>
                           conf['WEBSOCKET_URL'] = "{{ WEBSOCKET_URL }}";
+                          conf['GAME_URL'] = "{{ GAME_URL }}";
                           let is_admin = ("{{ is_admin }}" === "True");
                         </script>
                         <iframe id="game-iframe" onload="resizeIframe(this)" src="/wiki/Wikiracing"></iframe>
