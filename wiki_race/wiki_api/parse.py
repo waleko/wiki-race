@@ -62,9 +62,20 @@ def compare_titles(a: str, b: str) -> bool:
     Compares two titles of wiki pages
     :return: true if titles lead to the same page, false otherwise
     """
-    return urllib.parse.unquote(a).replace("_", " ") == urllib.parse.unquote(b).replace(
-        "_", " "
-    )
+    parser_result = requests.get(
+        WIKI_API,
+        params={
+            "action": "query",
+            "prop": "info",
+            "titles": f"{a}|{b}",
+            "format": "json",
+        },
+    ).json()
+    try:
+        pages = parser_result["query"]["pages"]
+        return len(pages) == 1 and "-1" not in pages
+    except KeyError:
+        return False
 
 
 async def _get_next_page(cur_page: str, walk_backwards: bool) -> Optional[str]:
@@ -198,8 +209,6 @@ async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]
                         )
                     solution.append(pages[str(num)]["title"])
                 full_solution = prequel[:-1] + solution + sequel[:-1][::-1]
-                print(prequel, solution, sequel)
-                print(full_solution)
                 return full_solution
     except Exception as e:
         logging.warning(f"Unable to solve: {origin_page} -> f{target_page}", exc_info=e)
