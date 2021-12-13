@@ -9,9 +9,12 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import asyncio
 import os
 from pathlib import Path
+from typing import Optional
 
+import aiohttp
 import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -165,8 +168,11 @@ WIKI_API = "https://en.wikipedia.org/w/api.php"
 POINTS_FOR_SOLVING = 100
 MIN_TIME_LIMIT_SECONDS = 60
 MAX_TIME_LIMIT_SECONDS = 3600
-
 USER_COOKIE_NAME = "user_id"
+
+AIOHTTP_SESSION: Optional[aiohttp.ClientSession] = (
+    None if DEBUG else aiohttp.ClientSession(loop=asyncio.new_event_loop())
+)
 
 # Django heroku helper
 django_heroku.settings(locals())

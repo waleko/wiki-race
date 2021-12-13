@@ -236,7 +236,7 @@ async def new_round_handler(
     # create party round
     party_round = await sync_to_async(new_round)(self.party, origin_page, target_page)
     # start looking for solution
-    asyncio.ensure_future(start_solving(party_round, session))
+    asyncio.ensure_future(start_solving(party_round))
 
     # get info for frontend
     round_info = await sync_to_async(get_initial_round_info)(party_round)

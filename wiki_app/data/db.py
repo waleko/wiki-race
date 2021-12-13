@@ -131,21 +131,24 @@ def new_round(party: Party, origin_page: str, target_page: str) -> Round:
     return party_round
 
 
-async def start_solving(party_round: Round, session: aiohttp.ClientSession) -> None:
+async def start_solving(party_round: Round) -> None:
     """
     Asynchronously solves party round
     """
-    solution = await solve_round(party_round.start_page, party_round.end_page, session)
-    party_round.solution = solution
-    await sync_to_async(party_round.save)(update_fields=["solution"])
-    if solution:
-        logging.info(
-            f"Solved round: {party_round.start_page} -> {party_round.end_page}"
+    async with aiohttp.ClientSession() as session:
+        solution = await solve_round(
+            party_round.start_page, party_round.end_page, session
         )
-    else:
-        logging.warning(
-            f"Failed to solve: {party_round.start_page} -> {party_round.end_page}"
-        )
+        party_round.solution = solution
+        await sync_to_async(party_round.save)(update_fields=["solution"])
+        if solution:
+            logging.info(
+                f"Solved round: {party_round.start_page} -> {party_round.end_page}"
+            )
+        else:
+            logging.warning(
+                f"Failed to solve: {party_round.start_page} -> {party_round.end_page}"
+            )
 
 
 def get_initial_round_info(party_round: Round) -> dict:
