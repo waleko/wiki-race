@@ -1,6 +1,6 @@
 // ===== Example rounds =====
 const exampleRounds = [
-  ['Milk', 'Mozarella'],
+  ['Milk', 'Mozzarella'],
   ['Albert Einstein', 'International Space Station'],
   ['Potato', 'Pizza'],
   ['Burger King', 'Barack Obama'],
