@@ -165,7 +165,7 @@ async def check_valid_transition(
         # get all internal links
         for e in parser_result["links"]:
             # get only namespace 0 links, compare titles
-            if e["ns"] == 0 and await compare_titles(e["*"], to_page):
+            if e["ns"] == 0 and await compare_titles(e["*"], to_page, session):
                 return True
 
         # if nothing found, return false
