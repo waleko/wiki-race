@@ -85,7 +85,7 @@ async def _get_next_page(cur_page: str, walk_backwards: bool) -> Optional[str]:
                 "action": "query",
                 "titles": cur_page,
                 "format": "json",
-                "prop": [prop],
+                "prop": prop,
             },
         ) as resp:
             data = await resp.json()
@@ -157,8 +157,8 @@ async def check_valid_transition(from_page: str, to_page: str) -> bool:
                 "action": "parse",
                 "page": from_page,
                 "format": "json",
-                "redirects": True,
-                "prop": ["links"],
+                "redirects": "true",
+                "prop": "links",
             },
         ) as resp:
             parser_result = (await resp.json())["parse"]
