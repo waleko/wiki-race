@@ -157,7 +157,7 @@ async def check_valid_transition(
             "action": "parse",
             "page": from_page,
             "format": "json",
-            "redirects": True,
+            "redirects": "true",
             "prop": ["links"],
         },
     ) as resp:
