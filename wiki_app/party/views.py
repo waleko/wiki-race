@@ -5,8 +5,8 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 
 import wiki_app.views
+from wiki_app.data.db import create_party, get_user, join_party
 from wiki_race.settings import USER_COOKIE_NAME
-from wiki_app.data.db import get_user, create_party, join_party
 
 
 def api_create_party(request: HttpRequest) -> HttpResponse:

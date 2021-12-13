@@ -2,7 +2,7 @@ import logging
 import random
 import urllib.parse
 from collections import namedtuple
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import aiohttp
 
@@ -186,7 +186,6 @@ async def solve_round(
         target_page, sequel = await _walk_titles_randomly(
             target_page, 2, session, walk_backwards=True
         )
-
         async with session.post(
             "https://api.sixdegreesofwikipedia.com/paths",  # TODO: devise a better solution
             json={"source": origin_page, "target": target_page},

@@ -1,15 +1,15 @@
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from wiki_app.data.db import get_user, is_admin
 from wiki_app.models import Party, PartyMember
 from wiki_app.websockets import urls
 from wiki_race.settings import (
-    USER_COOKIE_NAME,
-    MIN_TIME_LIMIT_SECONDS,
-    MAX_TIME_LIMIT_SECONDS,
     DEBUG,
+    MAX_TIME_LIMIT_SECONDS,
+    MIN_TIME_LIMIT_SECONDS,
+    USER_COOKIE_NAME,
 )
 
 

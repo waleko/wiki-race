@@ -1,5 +1,4 @@
-from django.test import TestCase, RequestFactory
-
+from django.test import RequestFactory, TestCase
 
 # Create your tests here.
 from wiki_parser.views import parse_wiki_page

@@ -3,20 +3,20 @@ import math
 from typing import Dict, List, Optional
 
 import aiohttp
-from asgiref.sync import sync_to_async, async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from django.db.models import F
 from django.forms import model_to_dict
 from django.http import HttpRequest
 from django.utils import timezone
 
-from wiki_app.models import User, Party, PartyMember, AdminRole, Round, MemberRound
+from wiki_app.models import AdminRole, MemberRound, Party, PartyMember, Round, User
 from wiki_race.settings import (
-    USER_COOKIE_NAME,
-    POINTS_FOR_SOLVING,
-    MIN_TIME_LIMIT_SECONDS,
     MAX_TIME_LIMIT_SECONDS,
+    MIN_TIME_LIMIT_SECONDS,
+    POINTS_FOR_SOLVING,
+    USER_COOKIE_NAME,
 )
-from wiki_race.wiki_api.parse import compare_titles, solve_round, check_page_exists
+from wiki_race.wiki_api.parse import check_page_exists, compare_titles, solve_round
 
 
 def get_user(request: HttpRequest) -> User:

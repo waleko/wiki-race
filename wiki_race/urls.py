@@ -17,9 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import RedirectView
 
-from wiki_app.views import index_view, new_party_page, join_page, game_page
-from wiki_parser.views import parse_wiki_page
 from wiki_app.party.views import api_create_party, api_enter_party
+from wiki_app.views import game_page, index_view, join_page, new_party_page
+from wiki_parser.views import parse_wiki_page
 
 urlpatterns = [
     path("wiki/<str:page_title>", parse_wiki_page),

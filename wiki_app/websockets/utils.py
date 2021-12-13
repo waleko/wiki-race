@@ -2,7 +2,7 @@ from typing import Tuple
 
 import aiohttp
 
-from wiki_race.wiki_api.parse import compare_titles, check_page_exists
+from wiki_race.wiki_api.parse import check_page_exists, compare_titles
 
 
 async def check_new_round_route(

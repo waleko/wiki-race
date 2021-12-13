@@ -8,22 +8,22 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from wiki_app.data.db import (
-    is_admin,
-    new_round,
-    get_initial_round_info,
+    check_if_time_ran_out,
     finish_round,
-    member_click,
     generate_leaderboards,
+    get_initial_round_info,
     get_latest_member_round,
     get_latest_party_round,
-    get_time_specific_round_info,
-    have_all_solved,
     get_member,
     get_or_create_member_round,
-    check_if_time_ran_out,
+    get_time_specific_round_info,
+    have_all_solved,
+    is_admin,
+    member_click,
+    new_round,
     start_solving,
 )
-from wiki_app.models import User, Party, Round, MemberRound
+from wiki_app.models import MemberRound, Party, Round, User
 from wiki_app.websockets.protocol_handlers import protocol_handler, protocol_handlers
 from wiki_app.websockets.utils import check_new_round_route
 from wiki_race.wiki_api.parse import check_valid_transition
@@ -268,7 +268,7 @@ async def click_handler(self: GameConsumer, data: dict, session: aiohttp.ClientS
         if member_round.solved_at != -1:
             return await self.send_error("already solved")
         # check if correct transition
-        correct_transition = check_valid_transition(
+        correct_transition = await check_valid_transition(
             member_round.current_page, clicked_page, session
         )
         if not correct_transition:
