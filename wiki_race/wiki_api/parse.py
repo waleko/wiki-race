@@ -63,7 +63,7 @@ def compare_titles(a: str, b: str) -> bool:
             "prop": "info",
             "titles": f"{a}|{b}",
             "format": "json",
-            "redirects": ""
+            "redirects": "",
         },
     ).json()
     try:
