@@ -170,9 +170,5 @@ MIN_TIME_LIMIT_SECONDS = 60
 MAX_TIME_LIMIT_SECONDS = 3600
 USER_COOKIE_NAME = "user_id"
 
-AIOHTTP_SESSION: Optional[aiohttp.ClientSession] = (
-    None if DEBUG else aiohttp.ClientSession(loop=asyncio.new_event_loop())
-)
-
 # Django heroku helper
 django_heroku.settings(locals())
