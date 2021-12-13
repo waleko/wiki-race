@@ -129,6 +129,7 @@ def new_round(party: Party, data: dict) -> Round:
     for member in party.members.all():
         member_round = MemberRound(member=member, round=party_round, current_page=start)
         member_round.save()
+    logging.debug(f"New round for {party.uid}")
     # return round
     return party_round
 
@@ -140,14 +141,6 @@ async def start_solving(party_round: Round) -> None:
     solution = await solve_round(party_round.start_page, party_round.end_page)
     party_round.solution = solution
     await sync_to_async(party_round.save)(update_fields=["solution"])
-    if solution:
-        logging.info(
-            f"Solved round: {party_round.start_page} -> {party_round.end_page}"
-        )
-    else:
-        logging.warning(
-            f"Failed to solve: {party_round.start_page} -> {party_round.end_page}"
-        )
 
 
 def get_initial_round_info(party_round: Round) -> dict:
@@ -199,6 +192,7 @@ def finish_round(party_round: Round) -> dict:
     party_round.save(update_fields=["running"])
     # generate leaderboards
     leaderboards = generate_leaderboards(party_round.party)
+    logging.debug(f"{party_round.party.uid} finished!")
     return {"solution": party_round.solution, "leaderboards": leaderboards}
 
 
@@ -260,6 +254,8 @@ def member_click(member_round: MemberRound, clicked_page: str) -> bool:
     # update current page
     member_round.current_page = clicked_page
     member_round.save(update_fields=["solved_at", "current_page"])
+
+    logging.debug(f"Member {member_round.member.name} clicked on {clicked_page}")
 
     return member_solved
 

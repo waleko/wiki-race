@@ -206,9 +206,10 @@ async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]
                         )
                     solution.append(pages[str(num)]["title"])
                 full_solution = prequel[:-1] + solution + sequel[:-1][::-1]
+                logging.info(f"Solved: {origin_page} -> {target_page}")
                 return full_solution
     except Exception as e:
-        logging.warning(f"Unable to solve: {origin_page} -> f{target_page}", exc_info=e)
+        logging.warning(f"Unable to solve: {origin_page} -> {target_page}", exc_info=e)
         return
 
 
