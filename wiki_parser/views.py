@@ -11,7 +11,6 @@ from wiki_race.wiki_api.parse import load_wiki_page
 
 @cache_page(60 * 60)
 def parse_wiki_page(request: HttpRequest, page_title: str) -> HttpResponse:
-    logging.info(f"Parsed {page_title}!")
     """
     View that gets wiki page html and formats it according to game rules (removes external links, etc.)
     """
@@ -28,4 +27,5 @@ def parse_wiki_page(request: HttpRequest, page_title: str) -> HttpResponse:
         "parsed-response.html",
         context={"mw_parser": formatted_html, "headers": {"X-Frame-Options": "allow"}},
     )
+    logging.info(f"Parsed {page_title}!")
     return response

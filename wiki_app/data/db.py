@@ -2,7 +2,8 @@ import logging
 import math
 from typing import Dict, List, Optional
 
-from asgiref.sync import sync_to_async
+import aiohttp
+from asgiref.sync import sync_to_async, async_to_sync
 from django.db.models import F
 from django.forms import model_to_dict
 from django.http import HttpRequest
@@ -60,6 +61,7 @@ def create_party(admin_user: User, form: Dict) -> Party:
     # create admin
     admin_role = AdminRole(party=party, admin_member=member)
     admin_role.save()
+    logging.info(f"Created new party: {party.uid}")
     # return party
     return party
 
@@ -107,37 +109,33 @@ def get_member(party: Party, user: User) -> Optional[PartyMember]:
         return
 
 
-def new_round(party: Party, data: dict) -> Round:
+def new_round(party: Party, origin_page: str, target_page: str) -> Round:
     """
     Creates new round for party. Doesn't check if previous round has finished.
     """
-    # make round package
-    start = data["origin"]
-    end = data["target"]
-    if compare_titles(start, end):
-        raise ValueError("Start and end pages must be different!")
-    if not check_page_exists(start):
-        raise ValueError(f"Start page {start} doesn't exist")
-    if not check_page_exists(end):
-        raise ValueError(f"End page {end} doesn't exist")
-    # solution will be generated asynchronously separately, see `start_solving`
 
     # create round
-    party_round = Round(party=party, start_page=start, end_page=end, solution=None)
+    # solution will be generated asynchronously separately, see `start_solving`
+    party_round = Round(
+        party=party, start_page=origin_page, end_page=target_page, solution=None
+    )
     party_round.save()
     # create member round for each member
     for member in party.members.all():
-        member_round = MemberRound(member=member, round=party_round, current_page=start)
+        member_round = MemberRound(
+            member=member, round=party_round, current_page=origin_page
+        )
         member_round.save()
+    logging.info(f"Started new round for {party_round.party.uid}")
     # return round
     return party_round
 
 
-async def start_solving(party_round: Round) -> None:
+async def start_solving(party_round: Round, session: aiohttp.ClientSession) -> None:
     """
     Asynchronously solves party round
     """
-    solution = await solve_round(party_round.start_page, party_round.end_page)
+    solution = await solve_round(party_round.start_page, party_round.end_page, session)
     party_round.solution = solution
     await sync_to_async(party_round.save)(update_fields=["solution"])
     if solution:
@@ -199,6 +197,7 @@ def finish_round(party_round: Round) -> dict:
     party_round.save(update_fields=["running"])
     # generate leaderboards
     leaderboards = generate_leaderboards(party_round.party)
+    logging.info(f"Round {party_round.party.uid} finished")
     return {"solution": party_round.solution, "leaderboards": leaderboards}
 
 
@@ -239,15 +238,20 @@ def get_left_seconds(party_round: Round) -> int:
     return party_round.party.time_limit - seconds_since_start
 
 
-def member_click(member_round: MemberRound, clicked_page: str) -> bool:
+def member_click(
+    member_round: MemberRound, clicked_page: str, session: aiohttp.ClientSession
+) -> bool:
     """
-    Logic for member click FIXME
+    Logic for member click
     :param member_round: member round
     :param clicked_page: wiki page title, member has clicked on
+    :param session: current http requests session
     :return: true if now solved, false if not yet solved
     """
     # check if member solved
-    member_solved = compare_titles(clicked_page, member_round.round.end_page)
+    member_solved = async_to_sync(compare_titles)(
+        clicked_page, member_round.round.end_page, session
+    )
     if member_solved:
         # save time
         member_round.solved_at = get_left_seconds(member_round.round)
@@ -260,6 +264,7 @@ def member_click(member_round: MemberRound, clicked_page: str) -> bool:
     # update current page
     member_round.current_page = clicked_page
     member_round.save(update_fields=["solved_at", "current_page"])
+    logging.info(f"Member click. Now {member_round.member.name} at {clicked_page}")
 
     return member_solved
 

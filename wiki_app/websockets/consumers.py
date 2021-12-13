@@ -3,6 +3,7 @@ import base64
 import json
 import logging
 
+import aiohttp
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
@@ -24,6 +25,7 @@ from wiki_app.data.db import (
 )
 from wiki_app.models import User, Party, Round, MemberRound
 from wiki_app.websockets.protocol_handlers import protocol_handler, protocol_handlers
+from wiki_app.websockets.utils import check_new_round_route
 from wiki_race.wiki_api.parse import check_valid_transition
 
 
@@ -210,7 +212,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
 @protocol_handler("new_round")
-async def new_round_handler(self: GameConsumer, data: dict):
+async def new_round_handler(
+    self: GameConsumer, data: dict, session: aiohttp.ClientSession
+):
     """
     New round websocket command handler
     """
@@ -223,14 +227,16 @@ async def new_round_handler(self: GameConsumer, data: dict):
     if prev_round is not None and prev_round.round.running:
         return await self.send_error("another round is running")
 
-    # create party round
+    # get form data
     try:
-        party_round = await sync_to_async(new_round)(self.party, data)
+        origin_page, target_page = await check_new_round_route(data, session)
     except Exception as e:
         logging.error(e)
         return await self.send_error("unable to create new round")
+    # create party round
+    party_round = await sync_to_async(new_round)(self.party, origin_page, target_page)
     # start looking for solution
-    asyncio.ensure_future(start_solving(party_round))
+    asyncio.ensure_future(start_solving(party_round, session))
 
     # get info for frontend
     round_info = await sync_to_async(get_initial_round_info)(party_round)
@@ -241,7 +247,7 @@ async def new_round_handler(self: GameConsumer, data: dict):
 
 
 @protocol_handler("click")
-async def click_handler(self: GameConsumer, data: dict):
+async def click_handler(self: GameConsumer, data: dict, session: aiohttp.ClientSession):
     """
     Click websocket command handler
     """
@@ -263,7 +269,7 @@ async def click_handler(self: GameConsumer, data: dict):
             return await self.send_error("already solved")
         # check if correct transition
         correct_transition = check_valid_transition(
-            member_round.current_page, clicked_page
+            member_round.current_page, clicked_page, session
         )
         if not correct_transition:
             # if incorrect, force redirect to last confirmed
@@ -271,7 +277,9 @@ async def click_handler(self: GameConsumer, data: dict):
                 "force_redirect", {"page": member_round.current_page}
             )
         # save to db and check if solved
-        solved: bool = await sync_to_async(member_click)(member_round, clicked_page)
+        solved: bool = await sync_to_async(member_click)(
+            member_round, clicked_page, session
+        )
         if solved:
             # update leaderboards
             await self.update_leaderboards()
@@ -284,7 +292,9 @@ async def click_handler(self: GameConsumer, data: dict):
 
 
 @protocol_handler("finish_early")
-async def finish_early_handler(self: GameConsumer, _: dict):
+async def finish_early_handler(
+    self: GameConsumer, _: dict, session: aiohttp.ClientSession
+):
     """
     Finish early websocket command handler
     """
