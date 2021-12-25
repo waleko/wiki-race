@@ -13,6 +13,7 @@
 [![GitHub top language](https://img.shields.io/github/languages/top/waleko/wiki-race?logo=github&style=flat-square)](https://github.com/waleko/wiki-race)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 [![license](https://img.shields.io/github/license/waleko/wiki-race?style=flat-square)](./LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwaleko%2Fwiki-race.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwaleko%2Fwiki-race?ref=badge_shield)
 
 <br />
 <br />
@@ -54,3 +55,5 @@ Questions and suggestions are welcome! Email me [a.kovrigin0@gmail.com](mailto:a
 
 ## License
 This project is [MIT](./LICENSE) licensed.
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwaleko%2Fwiki-race.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwaleko%2Fwiki-race?ref=badge_large)
