@@ -1,5 +1,5 @@
 <a href="https://wikirace.wlko.me">
-  <img align="left" height="80px" src="https://wikirace.wlko.me/static/logo/favicon512.png">
+  <img align="left" height="80px" src="/static/logo/favicon512.png">
 </a>
 <h1 style="display: inline;">
   Wikirace 
