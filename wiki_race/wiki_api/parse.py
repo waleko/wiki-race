@@ -7,7 +7,7 @@ from typing import Optional, Tuple, List
 import aiohttp
 import requests
 
-from wiki_race.settings import WIKI_API
+from wiki_race.settings import WIKI_API, SDOW_API
 
 Article = namedtuple("Article", ["title", "text", "properties"])
 
@@ -190,7 +190,7 @@ async def solve_round(origin_page: str, target_page: str) -> Optional[List[str]]
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                "https://api.sixdegreesofwikipedia.com/paths",  # TODO: devise a better solution
+                f"{SDOW_API}/paths",  # TODO: devise a better solution
                 json={"source": origin_page, "target": target_page},
             ) as resp:
                 if not resp.ok:

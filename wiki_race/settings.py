@@ -161,7 +161,8 @@ STATICFILES_DIRS = ["static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Application constants
-WIKI_API = "https://en.wikipedia.org/w/api.php"
+WIKI_API = os.environ.get("WIKI_API", "https://en.wikipedia.org/w/api.php")
+SDOW_API = os.environ.get("SDOW_API", "https://api.sixdegreesofwikipedia.com")
 POINTS_FOR_SOLVING = 100
 MIN_TIME_LIMIT_SECONDS = 60
 MAX_TIME_LIMIT_SECONDS = 3600
