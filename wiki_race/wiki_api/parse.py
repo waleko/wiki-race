@@ -44,15 +44,18 @@ async def load_wiki_page(title: str) -> Optional[Article]:
             )
 
 
+def standardize_wiki_title(title: str) -> str:
+    return urllib.parse.unquote(title).replace(
+        "_", " "
+    ).lower()
+
 def compare_titles(a: str, b: str) -> bool:
     """
     Compares two titles of wiki pages
     :return: true if titles lead to the same page, false otherwise
     """
     # make trivial check
-    trivial_equal = urllib.parse.unquote(a.lower()).replace(
-        "_", " "
-    ) == urllib.parse.unquote(b.lower()).replace("_", " ")
+    trivial_equal = standardize_wiki_title(a) == standardize_wiki_title(b)
     if trivial_equal:
         return True
     # make wiki api check

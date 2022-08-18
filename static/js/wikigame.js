@@ -1,3 +1,5 @@
+let WIKI_API_ENDPOINT;
+
 // ===== Example rounds =====
 const exampleRounds = [
   ['Milk', 'Mozzarella'],
@@ -14,15 +16,15 @@ const exampleRounds = [
 let suggestedOrigin, suggestedTarget;
 
 function setRandomExampleRound() {
-  const item = exampleRounds[Math.floor(Math.random()*exampleRounds.length)];
+  const item = exampleRounds[Math.floor(Math.random() * exampleRounds.length)];
   suggestedOrigin = item[0];
   suggestedTarget = item[1];
   $("#suggested-route").text("from " + suggestedOrigin + " to " + suggestedTarget);
 }
 
 function useSuggestedRound() {
-    $("#myorigin").typeahead("val", suggestedOrigin);
-    $("#mytarget").typeahead("val", suggestedTarget);
+  $("#myorigin").typeahead("val", suggestedOrigin);
+  $("#mytarget").typeahead("val", suggestedTarget);
 }
 
 // ===== Clock =====
@@ -184,6 +186,11 @@ function parseMessage(actionName, data) {
   if (actionName === "solved") {
     return solved();
   }
+  if (actionName === "set_wiki_endpoint") {
+    WIKI_API_ENDPOINT = data["url"];
+    console.info(`Now using this wiki endpoint: ${WIKI_API_ENDPOINT}`);
+    return;
+  }
   console.warn("Unprocessed: " + actionName);
 }
 
@@ -256,14 +263,14 @@ $(document).ready(function () {
       async: true,
       source: function (qry, _, async) {
         $.ajax(
-          "https://en.wikipedia.org/w/api.php?" +
-            $.param({
-              action: "opensearch",
-              search: qry,
-              namespace: 0,
-              redirects: "resolve",
-              origin: "*",
-            }),
+          `${WIKI_API_ENDPOINT}?` +
+          $.param({
+            action: "opensearch",
+            search: qry,
+            namespace: 0,
+            redirects: "resolve",
+            origin: "*",
+          }),
           {}
         ).done(function (res) {
           async(res[1]);
@@ -276,15 +283,15 @@ $(document).ready(function () {
 
 function setRandomOriginAndTitle() {
   $.ajax(
-    "https://en.wikipedia.org/w/api.php?" +
-      $.param({
-        action: "query",
-        list: "random",
-        rnnamespace: 0,
-        rnlimit: 2,
-        format: "json",
-        origin: "*",
-      }),
+    `${WIKI_API_ENDPOINT}?` +
+    $.param({
+      action: "query",
+      list: "random",
+      rnnamespace: 0,
+      rnlimit: 2,
+      format: "json",
+      origin: "*",
+    }),
     {}
   ).done(function (res) {
     $("#myorigin").typeahead("val", res.query.random[0].title);
@@ -294,15 +301,16 @@ function setRandomOriginAndTitle() {
 
 async function checkPageExists(page) {
   const resp = await $.ajax(
-    "https://en.wikipedia.org/w/api.php?" +
-      $.param({
-        action: "query",
-        prop: "info",
-        titles: page,
-        format: "json",
-        origin: "*",
-      })
-  ).done(function (res) {});
+    `${WIKI_API_ENDPOINT}?` +
+    $.param({
+      action: "query",
+      prop: "info",
+      titles: page,
+      format: "json",
+      origin: "*",
+    })
+  ).done(function (res) {
+  });
   return resp.query.pages["-1"] === undefined;
 }
 

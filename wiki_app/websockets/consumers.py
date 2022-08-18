@@ -24,6 +24,7 @@ from wiki_app.data.db import (
 )
 from wiki_app.models import User, Party, Round, MemberRound
 from wiki_app.websockets.protocol_handlers import protocol_handler, protocol_handlers
+from wiki_race.settings import WIKI_API
 from wiki_race.wiki_api.parse import check_valid_transition
 
 
@@ -46,6 +47,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         # accept websocket
         await self.accept()
 
+        # send used api wiki endpoint
+        await self.send_wiki_endpoint()
         # send leaderboards
         await self.update_leaderboards()
         # send round if in progress
@@ -204,6 +207,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         round_should_be_finished = await sync_to_async(have_all_solved)(party_round)
         if round_should_be_finished:
             await self.announce_finish_round(party_round)
+
+    async def send_wiki_endpoint(self):
+        """
+        Sends used wikimedia API endpoint for client-side verification
+        """
+        await self.send_action("set_wiki_endpoint", {"url": WIKI_API})
 
 
 # ===== Protocol handlers =====
