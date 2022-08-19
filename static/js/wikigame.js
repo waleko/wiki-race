@@ -2,15 +2,15 @@ let WIKI_API_ENDPOINT;
 
 // ===== Example rounds =====
 const exampleRounds = [
-  ['Milk', 'Mozzarella'],
-  ['Albert Einstein', 'International Space Station'],
-  ['Potato', 'Pizza'],
-  ['Burger King', 'Barack Obama'],
-  ['Scientology', 'Berlin Wall'],
-  ['Cat', 'New York City'],
-  ['Poland', 'Brisbane'],
-  ['Diplomacy', 'Video game industry'],
-  ['French language', 'Elizabeth II']
+  ['Молоко', 'Моцарелла'],
+  ['Альберт Эйнштейн', 'Международная космическая станция'],
+  ['Картофель', 'Пицца'],
+  ['Бургер Кинг', 'Барак Обама'],
+  ['Саентология', 'Берлинская стена'],
+  ['Кошка', 'Нью-Йорк'],
+  ['Польша', 'Астрахань'],
+  ['Дипломатия', 'Видеоигра'],
+  ['Французский язык', 'Елизавета II']
 ]
 
 let suggestedOrigin, suggestedTarget;
@@ -19,7 +19,7 @@ function setRandomExampleRound() {
   const item = exampleRounds[Math.floor(Math.random() * exampleRounds.length)];
   suggestedOrigin = item[0];
   suggestedTarget = item[1];
-  $("#suggested-route").text("from " + suggestedOrigin + " to " + suggestedTarget);
+  $("#suggested-route").text("от " + suggestedOrigin + " до " + suggestedTarget);
 }
 
 function useSuggestedRound() {
@@ -74,7 +74,7 @@ function updateLeaderboards(leaderboards) {
 function setSolution(solution) {
   let text;
   if (solution === null) {
-    text = "We could not find a solution :(";
+    text = "Мы не смогли найти решение :(";
   } else {
     text = solution.join(" -> ");
   }
@@ -143,13 +143,13 @@ function roundFinished(data) {
     $("#button-new-round").prop("disabled", false);
     $("#host-panel").show();
   } else {
-    $("#button-waiting").text("Waiting for host to start...");
+    $("#button-waiting").text("Ожидание хоста...");
   }
 
   updateLeaderboards(leaderboards);
   setSolution(solution);
 
-  $("#modal-title").text("Round finished...");
+  $("#modal-title").text("Раунд окончен...");
   showModal();
 }
 
@@ -158,7 +158,7 @@ function forceRedirect(data) {
 }
 
 function solved() {
-  $("#modal-title").text("Solved. Well done!");
+  $("#modal-title").text("У Вас получилось. Отлично!");
   showModal();
 }
 
@@ -316,11 +316,11 @@ async function checkPageExists(page) {
 
 async function checkExistOriginAndTarget() {
   if (!(await checkPageExists($("#myorigin").val()))) {
-    alert("Please select origin to be a correct wiki page title");
+    alert("Выберите существующую начальную страницу");
     return false;
   }
   if (!(await checkPageExists($("#mytarget").val()))) {
-    alert("Please select origin to be a correct wiki page title");
+    alert("Выберите существующую целевую страницу");
     return false;
   }
   return true;
@@ -334,7 +334,7 @@ jQuery.validator.addMethod(
       this.optional(element) || $("#myorigin").val() !== $("#mytarget").val()
     );
   },
-  "Origin and target pages must be different!"
+  "Начальная и целевая страницы должны быть различны!"
 );
 
 $("#new-round-form")

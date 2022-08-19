@@ -5,13 +5,13 @@
              style="background-image:url({% static 'img/scenery/my-background.jpeg' %});color:rgba(70, 70, 140, 0.85);">
         <div class="text">
             <h2>Wikirace</h2>
-            <p>Open-source <b>single-/multiplayer</b> online game for competitive wikiracing</p>
+            <p>Open-source <b>сингл-/мультиплейрная</b> онлайн игра для соревновательных вики-гонок</p>
             <a href="/new">
-                <button class="btn btn-primary btn-lg" type="button">Play</button>
+                <button class="btn btn-primary btn-lg" type="button">Играть</button>
             </a>
             <span class="p-1"/>
             <a href="https://github.com/waleko/wiki_race">
-                <button class="btn btn-outline-light btn-lg" type="button">Visit GitHub page</button>
+                <button class="btn btn-outline-light btn-lg" type="button">GitHub страница</button>
             </a>
         </div>
     </section>
@@ -24,15 +24,15 @@
                 <div class="col-md-6"><img class="img-thumbnail" src="{% static 'img/wikirace/round-screenshot.jpg' %}">
                 </div>
                 <div class="col-md-6">
-                    <h3>What is wikiracing</h3>
+                    <h3>Что такое вики-гонки</h3>
                     <div class="getting-started-info">
-                        <p>Wikiracing is a game using the Wikipedia online encyclopedia which focuses on traversing
-                            links from one page to another. <a class="mylink"
-                                                               href="https://en.wikipedia.org/wiki/Wikiracing">Read
-                                more</a></p>
+                        <p>Wikiracing — это игра, использующая онлайн-энциклопедию Википедия,
+                            в которой, используя ссылки на другие статьи, игроки переходят с одной страницы на другую.
+                            <a class="mylink"
+                               href="https://en.wikipedia.org/wiki/Wikiracing">Узнать больше</a></p>
                     </div>
                     <a href="/new">
-                        <button class="btn btn-outline-primary btn-lg" type="button">Play now</button>
+                        <button class="btn btn-outline-primary btn-lg" type="button">Играть сейчас</button>
                     </a>
                 </div>
             </div>
@@ -41,35 +41,34 @@
     <section class="clean-block features">
         <div class="container">
             <div class="block-heading">
-                <h2 class="text-info">Project features</h2>
-                <p>This website is a first year educational project for <a class="mylink"
-                                                                           href="https://spb.hse.ru/en/ba/appmath/">AMI
-                    at HSE SPb</a>. More information available on the <a class="mylink"
-                                                                         href="https://github.com/waleko/wiki_race">Github
-                    page</a>.</p>
+                <h2 class="text-info">Функциональности проекта</h2>
+                <p>Этот веб-сайт является образовательным проектом на 1-м курсе <a class="mylink"
+                                                                                   href="https://spb.hse.ru/en/ba/appmath/">ПМИ
+                    в Питерской Вышке</a>. Больше информации на <a class="mylink"
+                                                                   href="https://github.com/waleko/wiki_race">Github
+                    странице</a>.</p>
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-5 feature-box"><i class="icon-feed icon"></i>
-                    <h4>Asynchronous websockets</h4>
-                    <p>Data exchange with server during the game is fulfilled via asynchronous websockets. This allows
-                        for seamless multiplayer game process and doesn't require inefficient and complicated poll
-                        requests.</p>
+                    <h4>Асинхронные веб-сокеты</h4>
+                    <p>Для обмена данными во время игры используются асинхронные веб-сокеты. Это обеспечивает игровой
+                        процесс без задержек и не требует неэффективных и запутанных полл-запросов.</p>
                 </div>
                 <div class="col-md-5 feature-box"><i class="icon-docs icon"></i>
-                    <h4>Database</h4>
-                    <p>This project uses Postgresql database for main data storage and Redis database for storing
-                        short-term websocket information. Both these databases are both managed by Heroku platform and
-                        allow for automatic scaling.</p>
+                    <h4>База данных</h4>
+                    <p>Этот проект использует Postgresql базу данных как основное хранилище данных, а также использует
+                        Redis для хранения кратко-срочной информации для веб-соокетов.
+                        Обе эти базы данных управляются Heroku и позволяют автоматический scaling.</p>
                 </div>
                 <div class="col-md-5 feature-box"><i class="icon-check icon"></i>
-                    <h4>Auto-deploy and CI/CD</h4>
-                    <p>Deployment and CI/CD is fulfilled via Heroku platform. It makes possible to create simple but
-                        flexible pipeline for this project.</p>
+                    <h4>Авто-деплой и CI/CD</h4>
+                    <p>Деплой and CI/CD обеспечено платформой Heroku. Это позволяет сделать простой, но мощный pipeline
+                        для этого проекта.</p>
                 </div>
                 <div class="col-md-5 feature-box"><i class="icon-people icon"></i>
-                    <h4>Multiplayer</h4>
-                    <p>Wikirace can be played not only in singleplayer, it's multiplayer-ready as well. Play with all
-                        your friends. Who solves wikirace the fastest, gets more points!</p>
+                    <h4>Мультиплейер</h4>
+                    <p>В Wikirace можно играть не только одному, но и в большой компании. Играйте со всеми Вашими
+                        друзьями. Кто дойдёт до цели первый, наберёт больше очков!</p>
                 </div>
             </div>
         </div>

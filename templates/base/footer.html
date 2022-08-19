@@ -3,24 +3,24 @@
         <div class="row">
             <div class="col-sm-3"></div>
             <div class="col-sm-3">
-                <h5>Get started</h5>
+                <h5>Начать</h5>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/new">Play</a></li>
+                    <li><a href="/">Главная страница</a></li>
+                    <li><a href="/new">Играть</a></li>
                 </ul>
             </div>
             <div class="col-sm-3">
-                <h5>About us</h5>
+                <h5>О нас</h5>
                 <ul>
-                    <li><a href="https://github.com/waleko/wiki_race">Github page</a></li>
-                    <li><a href="mailto:a.kovrigin0@gmail.com">Contact me</a></li>
+                    <li><a href="https://github.com/waleko/wiki_race">GitHub</a></li>
+                    <li><a href="mailto:a.kovrigin0@gmail.com">Контакты</a></li>
                 </ul>
             </div>
             <div class="col-sm-3"></div>
         </div>
     </div>
     <div class="footer-copyright">
-        <p>© 2021 Alexander Kovrigin</p>
+        <p>© 2022 Александр Ковригин</p>
     </div>
 </footer>
 <div class="modal fade" role="dialog" tabindex="-1" id="modal-1" aria-hidden="true" data-keyboard="false"
@@ -28,17 +28,17 @@
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="modal-title">Waiting for game to start...</h4>
+                <h4 class="modal-title" id="modal-title">Ожидание начала игры...</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" id="button-close"
                         aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-info" role="alert">
-                    Invite your friends and play together!
-                    <button class="btn btn-outline-info" onclick="copyInviteLink()">Copy invite link</button>
+                    Пригласите своих друзей и играйте вместе!
+                    <button class="btn btn-outline-info" onclick="copyInviteLink()">Скопировать ссылку-приглашение</button>
                 </div>
-                <h5 id="header-solution">Possible solution: <p id="text-solution"></p></h5>
-                <p>Players:</p>
+                <h5 id="header-solution">Возможное решение: <p id="text-solution"></p></h5>
+                <p>Игроки:</p>
                 <div class="table-responsive">
                     <table class="table">
                         <tbody id="leaderboard-table">
@@ -47,13 +47,13 @@
                 </div>
                 <div id="host-panel" class="pb-3">
                     <hr>
-                    <h5>Set up next round:</h5>
+                    <h5>Настройки раунда:</h5>
                     <form id="new-round-form">
                         <div class="row m-1 pt-3" style="padding-bottom: 50px;">
                             <div class="col-3">
                                 <label>
-                                    Origin page
-                                    <input class="typeahead form-control" type="text" placeholder="Origin" name="origin"
+                                    Начальная страница
+                                    <input class="typeahead form-control" type="text" placeholder="Старт" name="origin"
                                            id="myorigin" required>
                                 </label>
                             </div>
@@ -65,8 +65,8 @@
                             </div>
                             <div class="col-3">
                                 <label>
-                                    Target page
-                                    <input class="typeahead form-control" type="text" placeholder="Target" name="target"
+                                    Целевая страница
+                                    <input class="typeahead form-control" type="text" placeholder="Цель" name="target"
                                            id="mytarget" required>
                                 </label>
                             </div>
@@ -74,23 +74,22 @@
                                 <button class="btn btn-primary" type="submit" id="button-new-round">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                           id="button-new-round-spinner"></span>
-                                    Start new round
+                                    Начать новый раунд
                                 </button>
                             </div>
                         </div>
                     </form>
-                    <div class="alert alert-secondary">Having a hard time thinking of interesting wiki pages? How about
-                        traversing <a class="alert-link" href="#" onclick="useSuggestedRound(); return false;"
+                    <div class="alert alert-secondary">Не получается придумать интересные страницы? Как насчёт пройти <a class="alert-link" href="#" onclick="useSuggestedRound(); return false;"
                                       id="suggested-route"></a>?
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" type="submit" id="button-waiting" disabled>
-                    Waiting for host to start...
+                    Ожиидание хоста...
                 </button>
                 <button class="btn btn-secondary" type="button" id="button-finish-early" onclick="requestFinishEarly()">
-                    Finish round early
+                    Завершить раунд сейчас
                 </button>
             </div>
         </div>
