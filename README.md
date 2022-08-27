@@ -49,7 +49,7 @@ Therefore it's main purpose is familiarizing myself with various technologies.
 'Circle Icons' by Nick Roach provided under [GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html).
 
 ## Contacts
-Questions and suggestions are welcome! Email me [a.kovrigin0@gmail.com](mailto:a.kovrigin0@gmail.com) or telegram me [@waleko](https://t.me/waleko).
+Questions and suggestions are welcome! Email me [inbox@alexkovrigin.me](mailto:inbox@alexkovrigin.me) or telegram me [@waleko](https://t.me/waleko).
 
 
 ## License
