@@ -1,0 +1,41 @@
+services:
+  # A Docker web service
+  - type: web
+    name: wikirace-en
+    env: docker
+    region: frankfurt
+    plan: free
+    branch: master
+    healthCheckPath: /
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: wikirace-en-redis
+          property: connectionString
+      - key: DATABASE_URL
+        fromDatabase:
+          name: elephant-en
+          property: connectionString
+      - fromGroup: common-wikirace
+  - type: redis
+    name: wikirace-en-redis
+    region: frankfurt 
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+    plan: free
+
+databases:
+  - name: elephant-en
+    plan: free
+    region: frankfurt 
+    postgresMajorVersion: 14
+
+envVarGroups:
+  - name: common-wikirace
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DJANGO_SETTINGS_MODULE
+        value: wiki_race.settings
