@@ -2,11 +2,13 @@ services:
   # A Docker web service
   - type: web
     name: wikirace-en
-    env: docker
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn wiki_race.asgi -k uvicorn.workers.UvicornWorker
     region: frankfurt
     plan: free
     branch: master
-#    healthCheckPath: /
+    healthCheckPath: /
     envVars:
       - key: REDIS_URL
         fromService:
