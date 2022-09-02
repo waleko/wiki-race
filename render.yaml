@@ -6,7 +6,7 @@ services:
     region: frankfurt
     plan: free
     branch: master
-    healthCheckPath: /
+#    healthCheckPath: /
     envVars:
       - key: REDIS_URL
         fromService:

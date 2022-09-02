@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 python manage.py migrate
 python manage.py createcachetable
-python -m gunicorn wiki_race.asgi -k uvicorn.workers.UvicornWorker -b ":${PORT:-10000}"
+python -m gunicorn wiki_race.asgi -k uvicorn.workers.UvicornWorker -b ":${PORT:-8000}"
