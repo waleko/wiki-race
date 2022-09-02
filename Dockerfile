@@ -4,5 +4,8 @@ ADD ./ /usr/local/wikirace
 WORKDIR /usr/local/wikirace
 
 RUN pip install -r requirements.txt
-ENTRYPOINT /usr/local/wikirace/prod.sh
+
+RUN python manage.py migrate
+RUN python manage.py createcachetable
+ENTRYPOINT gunicorn wiki_race.asgi -k uvicorn.workers.UvicornWorker
 # CMD bash
