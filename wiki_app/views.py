@@ -61,7 +61,7 @@ def game_page(request: HttpRequest, game_id: str) -> HttpResponse:
             urlconf=urls,
             kwargs={"game_id": game_id, "user_id": user.uid},
         )
-        websocket_protocol = "ws" if USE_SECURE_WEBSOCKETS else "wss"
+        websocket_protocol = "wss" if USE_SECURE_WEBSOCKETS else "ws"
         # load game page
         response = render(
             request,
