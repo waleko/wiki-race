@@ -4,7 +4,7 @@ services:
     name: wikirace-en
     env: python
     buildCommand: ./build.sh
-    startCommand: gunicorn wiki_race.asgi -k uvicorn.workers.UvicornH11Worker
+    startCommand: gunicorn wiki_race.asgi -k uvicorn.workers.UvicornWorker
     region: frankfurt
     plan: free
     branch: master
@@ -42,4 +42,6 @@ envVarGroups:
       - key: DJANGO_SETTINGS_MODULE
         value: wiki_race.settings
       - key: DEBUG
+        value: true
+      - key: USE_SECURE_WEBSOCKETS
         value: true
