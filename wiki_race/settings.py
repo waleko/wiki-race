@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-k5p15ds1cu^eas@r)=!d-pt8*cc6&9m%s4x#ixs6u0b9b!g5d3"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("LOCAL") is not None
+DEBUG = os.environ.get("LOCAL") is not None or os.environ.get("DEBUG") is not None
 
 ALLOWED_HOSTS = []
 
@@ -171,3 +171,5 @@ USER_COOKIE_NAME = "user_id"
 
 # Django heroku helper
 django_heroku.settings(locals())
+
+USE_SECURE_WEBSOCKETS = os.environ.get("LOCAL") is None or os.environ.get("USE_SECURE_WEBSOCKETS") is not None

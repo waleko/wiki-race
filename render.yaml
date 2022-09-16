@@ -41,3 +41,5 @@ envVarGroups:
         generateValue: true
       - key: DJANGO_SETTINGS_MODULE
         value: wiki_race.settings
+      - key: DEBUG
+        value: true
