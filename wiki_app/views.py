@@ -9,7 +9,7 @@ from wiki_race.settings import (
     USER_COOKIE_NAME,
     MIN_TIME_LIMIT_SECONDS,
     MAX_TIME_LIMIT_SECONDS,
-    DEBUG,
+    USE_SECURE_WEBSOCKETS,
 )
 
 
@@ -61,7 +61,7 @@ def game_page(request: HttpRequest, game_id: str) -> HttpResponse:
             urlconf=urls,
             kwargs={"game_id": game_id, "user_id": user.uid},
         )
-        websocket_protocol = "ws" if DEBUG else "wss"
+        websocket_protocol = "ws" if USE_SECURE_WEBSOCKETS else "wss"
         # load game page
         response = render(
             request,
