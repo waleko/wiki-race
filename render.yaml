@@ -27,7 +27,7 @@ services:
       - source: 0.0.0.0/0
         description: everywhere
     plan: free
-- type: web
+  - type: web
     name: wikirace-ru
     env: python
     buildCommand: ./build.sh
