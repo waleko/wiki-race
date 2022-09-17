@@ -27,9 +27,42 @@ services:
       - source: 0.0.0.0/0
         description: everywhere
     plan: free
+- type: web
+    name: wikirace-ru
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn wiki_race.asgi -k uvicorn.workers.UvicornWorker
+    region: frankfurt
+    plan: free
+    branch: ru
+#    healthCheckPath: /
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: wikirace-ru-redis
+          property: connectionString
+      - key: DATABASE_URL
+        fromDatabase:
+          name: elephant-ru
+          property: connectionString
+      - key: WIKI_API
+        value: https://ru.wikipedia.org/w/api.php
+      - fromGroup: common-wikirace
+  - type: redis
+    name: wikirace-ru-redis
+    region: frankfurt 
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+    plan: free
 
 databases:
   - name: elephant-en
+    plan: free
+    region: frankfurt 
+    postgresMajorVersion: 14
+  - name: elephant-ru
     plan: free
     region: frankfurt 
     postgresMajorVersion: 14
